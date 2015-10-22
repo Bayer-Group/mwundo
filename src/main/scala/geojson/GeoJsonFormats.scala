@@ -49,8 +49,7 @@ object GeoJsonFormats extends DefaultJsonProtocol {
   implicit object MultiPolygonFormat extends CoordFormat[MultiPolygon, Seq[Seq[Seq[Coordinate]]]]("MultiPolygon", MultiPolygon)
 
 
-  sealed abstract class GeometryCollectionFormat[G <: Geometry] (implicit gFmt: JsonFormat[G])
-      extends RootJsonFormat[GeometryCollection[G]] {
+  implicit def GeometryCollectionFormat[G <: Geometry] (implicit gFmt: JsonFormat[G]) = new RootJsonFormat[GeometryCollection[G]] {
 
     def write(obj: GeometryCollection[G]): JsValue = JsObject(
       ("type", JsString("GeometryCollection")),
@@ -67,16 +66,7 @@ object GeoJsonFormats extends DefaultJsonProtocol {
     }
   }
 
-  implicit object PointCollectionFormat extends GeometryCollectionFormat[Point]
-  implicit object MultiPointCollectionFormat extends GeometryCollectionFormat[MultiPoint]
-  implicit object LineStringCollectionFormat extends GeometryCollectionFormat[LineString]
-  implicit object MultiLineStringCollectionFormat extends GeometryCollectionFormat[MultiLineString]
-  implicit object PolygonCollectionFormat extends GeometryCollectionFormat[Polygon]
-  implicit object MultiPolygonCollectionFormat extends GeometryCollectionFormat[MultiPolygon]
-
-
-  sealed abstract class FeatureFormat[G <: Geometry, P] (implicit gFmt: JsonFormat[G], pFmt: JsonFormat[P])
-      extends RootJsonFormat[Feature[G, P]] {
+  implicit def FeatureFormat[G <: Geometry, P] (implicit gFmt: JsonFormat[G], pFmt: JsonFormat[P]) = new RootJsonFormat[Feature[G, P]] {
 
     def write(obj: Feature[G, P]): JsValue = JsObject(
       ("type", JsString(obj.`type`)),
@@ -97,23 +87,7 @@ object GeoJsonFormats extends DefaultJsonProtocol {
     }
   }
 
-  abstract class FeaturePointFormat[P](implicit pFmt: JsonFormat[P]) extends FeatureFormat[Point, P]
-  abstract class FeatureMultiPointFormat[P](implicit pFmt: JsonFormat[P]) extends FeatureFormat[MultiPoint, P]
-  abstract class FeatureLineStringFormat[P](implicit pFmt: JsonFormat[P]) extends FeatureFormat[LineString, P]
-  abstract class FeatureMultiLineStringFormat[P](implicit pFmt: JsonFormat[P]) extends FeatureFormat[MultiLineString, P]
-  abstract class FeaturePolygonFormat[P](implicit pFmt: JsonFormat[P]) extends FeatureFormat[Polygon, P]
-  abstract class FeatureMultiPolygonFormat[P](implicit pFmt: JsonFormat[P]) extends FeatureFormat[MultiPolygon, P]
-
-  implicit object FeaturePointMapFormat extends FeaturePointFormat[Map[String, String]]
-  implicit object FeatureMultiPointMapFormat extends FeatureMultiPointFormat[Map[String, String]]
-  implicit object FeatureLineStringMapFormat extends FeatureLineStringFormat[Map[String, String]]
-  implicit object FeatureMultiLineStringMapFormat extends FeatureMultiLineStringFormat[Map[String, String]]
-  implicit object FeaturePolygonMapFormat extends FeaturePolygonFormat[Map[String, String]]
-  implicit object FeatureMultiPolygonMapFormat extends FeatureMultiPolygonFormat[Map[String, String]]
-
-
-  sealed abstract class FeatureCollectionFormat[G <: Geometry, P] (implicit fFmt: FeatureFormat[G, P])
-      extends RootJsonFormat[FeatureCollection[G, P]] {
+  implicit def FeatureCollectionFormat[G <: Geometry, P] (implicit fFmt: JsonFormat[Feature[G, P]]) = new RootJsonFormat[FeatureCollection[G, P]] {
 
     def write(obj: FeatureCollection[G, P]): JsValue = JsObject(
       ("type", JsString(obj.`type`)),
@@ -129,18 +103,4 @@ object GeoJsonFormats extends DefaultJsonProtocol {
       case _ => deserializationError(s"'$json' is not a valid FeatureCollection")
     }
   }
-
-  abstract class FeatureCollectionPointFormat[P](implicit fpFmt: FeaturePointFormat[P]) extends FeatureCollectionFormat[Point, P]
-  abstract class FeatureCollectionMultiPointFormat[P](implicit fpFmt: FeatureMultiPointFormat[P]) extends FeatureCollectionFormat[MultiPoint, P]
-  abstract class FeatureCollectionLineStringFormat[P](implicit fpFmt: FeatureLineStringFormat[P]) extends FeatureCollectionFormat[LineString, P]
-  abstract class FeatureCollectionMultiLineStringFormat[P](implicit fpFmt: FeatureMultiLineStringFormat[P]) extends FeatureCollectionFormat[MultiLineString, P]
-  abstract class FeatureCollectionPolygonFormat[P](implicit fpFmt: FeaturePolygonFormat[P]) extends FeatureCollectionFormat[Polygon, P]
-  abstract class FeatureCollectionMultiPolygonFormat[P](implicit fpFmt: FeatureMultiPolygonFormat[P]) extends FeatureCollectionFormat[MultiPolygon, P]
-
-  implicit object FeatureCollectionPointMapFormat extends FeatureCollectionPointFormat[Map[String, String]]
-  implicit object FeatureCollectionMultiPointMapFormat extends FeatureCollectionMultiPointFormat[Map[String, String]]
-  implicit object FeatureCollectionLineStringMapFormat extends FeatureCollectionLineStringFormat[Map[String, String]]
-  implicit object FeatureCollectionMultiLineStringMapFormat extends FeatureCollectionMultiLineStringFormat[Map[String, String]]
-  implicit object FeatureCollectionPolygonMapFormat extends FeatureCollectionPolygonFormat[Map[String, String]]
-  implicit object FeatureCollectionMultiPolygonMapFormat extends FeatureCollectionMultiPolygonFormat[Map[String, String]]
 }

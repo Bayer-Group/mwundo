@@ -181,7 +181,6 @@ class GeoJsonFormatTest extends FunSpec with Matchers with ParallelTestExecution
 
       case class MyProps(hi: String)
       implicit val pFmt = jsonFormat1(MyProps)
-      implicit object FeatureMultiPolygonMyPropsFormat extends FeatureMultiPolygonFormat[MyProps]
 
       val x = Feature(g, MyProps("ho"), "id")
 
@@ -217,8 +216,6 @@ class GeoJsonFormatTest extends FunSpec with Matchers with ParallelTestExecution
 
       case class MyProps(hi: String)
       implicit val pFmt = jsonFormat1(MyProps)
-      implicit object FeatureMultiPolygonMyPropsFormat extends FeatureMultiPolygonFormat[MyProps]
-      implicit object FeatureCollectionMultiPolygonMyPropsFormat extends FeatureCollectionMultiPolygonFormat[MyProps]
 
       val x = FeatureCollection(Seq(Feature(g, MyProps("ho"), "id"), Feature(g, MyProps("ho"), "id")))
 
