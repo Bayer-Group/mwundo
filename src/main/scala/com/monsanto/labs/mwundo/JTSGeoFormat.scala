@@ -1,6 +1,6 @@
-package com.monsanto.labs.geojson
+package com.monsanto.labs.mwundo
 
-import com.monsanto.labs.geojson._
+import com.monsanto.labs.mwundo._
 import com.vividsolutions.jts.geom.MultiPolygon
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
 import com.vividsolutions.jts.geom._

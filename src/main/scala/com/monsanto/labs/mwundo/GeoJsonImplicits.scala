@@ -1,6 +1,6 @@
-package com.monsanto.labs.geojson
+package com.monsanto.labs.mwundo
 
-import com.monsanto.labs.geojson.GeoJson.Feature
+import com.monsanto.labs.mwundo.GeoJson.Feature
 import com.vividsolutions.jts.geom.GeometryFactory
 
 /**

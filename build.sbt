@@ -1,5 +1,5 @@
 
-name := "geojson-spray"
+name := "mwundo"
 organization := "com.monsanto.labs"
 version := "0.0.1"
 
