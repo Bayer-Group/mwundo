@@ -1,10 +1,10 @@
 package com.monsanto.labs.mwundo
 
-import com.monsanto.labs.sim.agriculture.distributions.BetaDistribution2D
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
-import com.vividsolutions.jts.geom.{GeometryCollection, Envelope, Coordinate, GeometryFactory}
-import com.vividsolutions.jts.triangulate.VoronoiDiagramBuilder
-import org.scalatest.{Matchers, FunSpec}
+//import com.monsanto.labs.sim.agriculture.distributions.BetaDistribution2D
+//import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
+//import com.vividsolutions.jts.geom.{GeometryCollection, Envelope, Coordinate, GeometryFactory}
+//import com.vividsolutions.jts.triangulate.VoronoiDiagramBuilder
+//import org.scalatest.{Matchers, FunSpec}
 
 import collection.JavaConverters._
 
