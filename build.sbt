@@ -1,7 +1,11 @@
 
 name := "geojson-spray"
-organization := "io.fielddrive"
+organization := "com.monsanto.labs"
 version := "0.0.1"
+
+bintrayOrganization := Some("monsanto")
+
+licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause"))
 
 scalaVersion := "2.11.6"
 
@@ -28,3 +32,4 @@ testOptions in Test ++= Seq(
 )
 
 PluginConfig.settings
+
