@@ -6,14 +6,15 @@ object Dependencies {
   private val sprayV = "1.3.3"
 
   lazy val compile = Seq(
-  "io.spray"                  %% "spray-json"                   % "1.3.1"
+  "io.spray"                  %% "spray-json"          % "1.3.1"
+  ,"com.vividsolutions"        % "jts"                 % "1.12"
   )
 
   lazy val test = Seq(
-    "org.scalatest"           %% "scalatest"                    % "2.2.4",
-    "org.scalacheck"          %% "scalacheck"                   % "1.12.2",
-    "org.scalamock"           %% "scalamock-scalatest-support"  % "3.2",
-    "org.pegdown"             %  "pegdown"                      % "1.4.2",
-    "io.spray"                %% "spray-testkit"                % sprayV
+    "org.scalatest"           %% "scalatest"                    % "2.2.4"
+    ,"org.scalacheck"          %% "scalacheck"                   % "1.12.2"
+    ,"org.scalamock"           %% "scalamock-scalatest-support"  % "3.2"
+    ,"org.pegdown"             %  "pegdown"                      % "1.4.2"
+    ,"io.spray"                %% "spray-testkit"                % sprayV
   ).map(_ % "test")
 }
