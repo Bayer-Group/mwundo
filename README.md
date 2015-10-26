@@ -6,6 +6,10 @@ Add the following to your SBT dependencies:
 
 `"com.monsanto.labs"          %% "mwundo"                 % "0.0.6"`
 
+You may also need to add:
+
+`resolvers += Resolver.bintrayRepo("monsanto", "maven")`
+
 ## About
 "mwundo" is Swahili for "shape," plus its fun to say.
 
