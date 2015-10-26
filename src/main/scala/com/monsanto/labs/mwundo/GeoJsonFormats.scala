@@ -68,23 +68,31 @@ object GeoJsonFormats extends DefaultJsonProtocol {
 
   implicit def FeatureFormat[G <: Geometry, P] (implicit gFmt: JsonFormat[G], pFmt: JsonFormat[P]) = new RootJsonFormat[Feature[G, P]] {
 
-    def write(obj: Feature[G, P]): JsValue = JsObject(
-      ("type", JsString(obj.`type`)),
-      ("geometry", obj.geometry.toJson),
-      ("properties", obj.properties.toJson),
-      ("id", obj.id.toJson)
-    )
+    def write(obj: Feature[G, P]): JsValue = {
+      val withoutID = Seq(
+        ("type", JsString(obj.`type`)),
+        ("geometry", obj.geometry.toJson),
+        ("properties", obj.properties.toJson)
+      )
 
-    def read(json: JsValue): Feature[G, P] = json match {
-      case JsObject(jsObj) if jsObj.get("type").contains(JsString("Feature")) =>
-        Feature[G, P](
+      JsObject(
+        (
+          if(obj.id.isEmpty) withoutID else withoutID :+ (("id", obj.id.toJson))
+        ):_*
+      )
+    }
+
+    def read(json: JsValue): Feature[G, P] =
+      json match {
+        case JsObject(jsObj) if jsObj.get("type").contains(JsString("Feature")) =>
+          Feature[G, P](
           jsObj("geometry").convertTo[G],
           jsObj("properties").convertTo[P],
-          jsObj("id").convertTo[Option[String]]
+          jsObj.get("id").map(_.convertTo[String])
         )
 
-      case _ => deserializationError(s"'$json' is not a valid Feature")
-    }
+        case _ => deserializationError(s"'$json' is not a valid Feature")
+      }
   }
 
   implicit def FeatureCollectionFormat[G <: Geometry, P] (implicit fFmt: JsonFormat[Feature[G, P]]) = new RootJsonFormat[FeatureCollection[G, P]] {

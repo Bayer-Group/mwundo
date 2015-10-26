@@ -220,5 +220,11 @@ class GeoJsonFormatTest extends FunSpec with Matchers with ParallelTestExecution
 
       marshalAndUnmarshal(x)
     }
+
+    it("should marshal and unmarshal features without IDs"){
+      val f = Feature(GeoJson.Point(Coordinate(1, 1)), MyProps("hi de ho"))
+
+      marshalAndUnmarshal(f)
+    }
   }
 }
