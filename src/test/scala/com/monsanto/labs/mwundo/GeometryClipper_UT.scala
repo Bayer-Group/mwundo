@@ -1,4 +1,4 @@
-package com.monsanto.labs.geometry
+package com.monsanto.labs.mwundo
 
 import com.monsanto.labs.sim.agriculture.distributions.BetaDistribution2D
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
