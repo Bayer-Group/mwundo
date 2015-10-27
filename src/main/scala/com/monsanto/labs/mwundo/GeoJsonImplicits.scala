@@ -14,32 +14,21 @@ object GeoJsonImplicits {
   }
 
   implicit class RichGeoJsonFeature[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer, P](feature: Feature[G, P])
-    extends GeometryOps[G] {
+    extends GeometryOps[G](feature.geometry) {
 
-    val geometry = feature.geometry
-
-    protected val geoX = implicitly[GeoTransformer[G]]
-    protected val jtsGeoFormat: JTSGeoFormat[G] = implicitly
-
-    def translatedFeature(x: Double, y: Double) = feature.copy( geometry = geometry.translated(x, y) )
-    def scaledFeature(x: Double, y: Double) = feature.copy( geometry = geometry.scaled(x, y) )
+    def translatedFeature(x: Double, y: Double) = feature.copy( geometry = feature.geometry.translated(x, y) )
+    def scaledFeature(    x: Double, y: Double) = feature.copy( geometry = feature.geometry.scaled(x, y)     )
   }
-
   object RichGeoJsonFeature {
     val geoFac = new GeometryFactory()
   }
 
   implicit class RichGeoJsonGeometry[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer](val geometry: G)
-    extends GeometryOps[G] {
+    extends GeometryOps[G](geometry)
 
-    protected val geoX: GeoTransformer[G] = implicitly
-    protected val jtsGeoFormat: JTSGeoFormat[G] = implicitly
-  }
-
-  trait GeometryOps[G <: GeoJson.Geometry]{
-    val geometry: G
-    protected val geoX: GeoTransformer[G]
-    protected val jtsGeoFormat: JTSGeoFormat[G]
+  abstract class GeometryOps[G <: GeoJson.Geometry : GeoTransformer : JTSGeoFormat](geometry: G){
+    private val geoX: GeoTransformer[G] = implicitly
+    private val jtsGeoFormat: JTSGeoFormat[G] = implicitly
 
     def asJTS = jtsGeoFormat.toJSTGeo(geometry, RichGeoJsonFeature.geoFac)
 
