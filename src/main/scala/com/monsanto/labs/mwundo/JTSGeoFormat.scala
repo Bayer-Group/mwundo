@@ -30,8 +30,7 @@ object JTSGeoFormat {
       }.toArray
     )
 
-    // swap X and Y going from geometries to lat/long geo's
-    private def toGeoJsonCoord(c: Coordinate) = GeoJson.Coordinate(c.y, c.x)
+    private def toGeoJsonCoord(c: Coordinate) = GeoJson.Coordinate(c.x, c.y)
 
     def fromJSTGeo(geo: Geometry): GeoJson.MultiPolygon = {
 
