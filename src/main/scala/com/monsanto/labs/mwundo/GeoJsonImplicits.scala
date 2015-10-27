@@ -13,17 +13,42 @@ object GeoJsonImplicits {
     def as[G <: GeoJson.Geometry : JTSGeoFormat]: G = implicitly[JTSGeoFormat[G]].fromJSTGeo(geom)
   }
 
-  implicit class RichGeoJsonFeature[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer, P](feature: Feature[G, P]) {
-    private val geoX = implicitly[GeoTransformer[G]]
+  implicit class RichGeoJsonFeature[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer, P](feature: Feature[G, P])
+    extends GeometryOps[G] {
 
-    def asJTS = implicitly[JTSGeoFormat[G]].toJSTGeo(feature.geometry, RichGeoJsonFeature.geoFac)
+    val geometry = feature.geometry
 
-    def translated(x: Double, y: Double) = feature.copy( geometry = geoX.translate(x, y)(feature.geometry) )
-    def scaled(x: Double, y: Double) = feature.copy( geometry = geoX.scale(x, y)(feature.geometry) )
-    def maxLat: Double = geoX.maxY(feature.geometry)
-    def maxLong: Double = geoX.maxX(feature.geometry)
-    def minLat: Double = geoX.minY(feature.geometry)
-    def minLong: Double = geoX.minX(feature.geometry)
+    protected val geoX = implicitly[GeoTransformer[G]]
+    protected val jtsGeoFormat: JTSGeoFormat[G] = implicitly
+
+    def translatedFeature(x: Double, y: Double) = feature.copy( geometry = geometry.translated(x, y) )
+    def scaledFeature(x: Double, y: Double) = feature.copy( geometry = geometry.scaled(x, y) )
+  }
+
+  object RichGeoJsonFeature {
+    val geoFac = new GeometryFactory()
+  }
+
+  implicit class RichGeoJsonGeometry[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer](val geometry: G)
+    extends GeometryOps[G] {
+
+    protected val geoX: GeoTransformer[G] = implicitly
+    protected val jtsGeoFormat: JTSGeoFormat[G] = implicitly
+  }
+
+  trait GeometryOps[G <: GeoJson.Geometry]{
+    val geometry: G
+    protected val geoX: GeoTransformer[G]
+    protected val jtsGeoFormat: JTSGeoFormat[G]
+
+    def asJTS = jtsGeoFormat.toJSTGeo(geometry, RichGeoJsonFeature.geoFac)
+
+    def translated(x: Double, y: Double) = geoX.translate(x, y)(geometry)
+    def scaled(x: Double, y: Double) = geoX.scale(x, y)(geometry)
+    def maxLat: Double = geoX.maxY(geometry)
+    def maxLong: Double = geoX.maxX(geometry)
+    def minLat: Double = geoX.minY(geometry)
+    def minLong: Double = geoX.minX(geometry)
 
     def width = maxLong - minLong
     def height = maxLat - minLat
@@ -44,9 +69,5 @@ object GeoJsonImplicits {
     def boundingBoxAreaAcres = 247.105 * boundingBoxAreaKmSq
 
     def areaInAcres = asJTS.getArea / asJTS.getEnvelope.getArea * boundingBoxAreaAcres
-  }
-
-  object RichGeoJsonFeature {
-    val geoFac = new GeometryFactory()
   }
 }
