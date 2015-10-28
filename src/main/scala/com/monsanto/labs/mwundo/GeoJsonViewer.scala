@@ -26,8 +26,6 @@ case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](ge
     val sw = implicitly[Java2Dable[G]]
     val shapes = translated.flatMap(g => sw.toJava2D(g))
 
-    println(shapes.map(_.getBounds2D))
-
     shapes.foreach{ s => g.asInstanceOf[Graphics2D].draw(s) }
   }
 

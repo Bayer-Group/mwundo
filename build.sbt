@@ -1,7 +1,7 @@
 
 name := "mwundo"
 organization := "com.monsanto.labs"
-version := "0.0.23"
+version := "0.0.24"
 
 bintrayOrganization := Some("monsanto")
 
