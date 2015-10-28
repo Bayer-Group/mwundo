@@ -10,8 +10,12 @@ object Utils {
 
   private val meanRadiusOfEarthKm = 6371.0
 
-  def latLongRectangleArea(lat1: Double, long1: Double, lat2: Double, long2: Double) =
-    Math.pow(meanRadiusOfEarthKm, 2.0) *
+  def surfaceAreaOfSphere(r: Double): Double = {
+    latLongRectangleArea(-90D,-180D,90D,180D,r)
+  }
+
+  def latLongRectangleArea(lat1: Double, long1: Double, lat2: Double, long2: Double, r: Double = meanRadiusOfEarthKm) =
+    Math.pow(r, 2.0) *
     Math.abs(
       Math.sin(Math.toRadians(lat1)) - Math.sin( Math.toRadians(lat2))
     ) *
@@ -19,13 +23,13 @@ object Utils {
       Math.toRadians(long1) - Math.toRadians(long2)
     )
 
-  def haversineDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double) = {
+  def haversineDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double, r: Double = meanRadiusOfEarthKm) = {
     val dLat = Math.toRadians(lat2 - lat1)
     val dLon = Math.toRadians(lng2 - lng1)
     val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
     val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    val d = meanRadiusOfEarthKm * c
+    val d = r * c
     d
   }
 
