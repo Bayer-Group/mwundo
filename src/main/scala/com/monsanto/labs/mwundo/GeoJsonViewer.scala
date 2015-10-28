@@ -8,20 +8,22 @@ import javax.swing.JPanel
 import breeze.linalg.DenseMatrix
 import com.vividsolutions.jts.geom.GeometryFactory
 
-case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](geos: Seq[G]) extends JPanel {
+case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](geos: Seq[G])(implicit offset: Int = 10) extends JPanel {
   import java.awt.Graphics
   import java.awt.Graphics2D
 
   import javax.swing.JFrame
 
-  val windowWidth = 700
-  val windowHeight = 700
+  val windowWidthMax = 700
+  val windowHeightMax = 700
+  val viewerBarHeight = 23
+//  implicit val offset = 10
 
   override def paint(g: Graphics) = {
 
     val transformer = implicitly[GeoTransformer[G]]
 
-    val translated = GeoJsonViewer.transformToJava2DLocalCoordinates(windowWidth, windowHeight, geos)
+    val translated = GeoJsonViewer.transformToJava2DLocalCoordinates(windowWidthMax, windowHeightMax, geos)
 
     val sw = implicitly[Java2Dable[G]]
     val shapes = translated.flatMap(g => sw.toJava2D(g))
@@ -30,30 +32,55 @@ case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](ge
   }
 
   def display() = {
+    val scalingInfo = ScalingInformation(geos, windowHeightMax, windowWidthMax)
+    val geoWidth = ((scalingInfo.maxX - scalingInfo.minX) * scalingInfo.upScale).toInt
+    val geoHeight = ((scalingInfo.maxY - scalingInfo.minY) * scalingInfo.upScale).toInt
+    val correctedWindowWidth = geoWidth + 2 * offset
+    val correctedWindowHeight = geoHeight + 2 * offset + viewerBarHeight
     val f = new JFrame()
     f.getContentPane.add(new GeoJsonViewer(geos))
-    f.setSize(windowWidth, windowHeight)
+    f.setSize(correctedWindowWidth, correctedWindowHeight)
     f.setVisible(true)
   }
 }
 
 object GeoJsonViewer {
   def transformToJava2DLocalCoordinates[G <: GeoJson.Geometry : Java2Dable : GeoTransformer]
-  (windowWidth: Double, windowHeight: Double, geos: Seq[G]) = {
+  (windowWidthMax: Double, windowHeightMax: Double, geos: Seq[G])(implicit offset: Int) = {
 
     val transformer = implicitly[GeoTransformer[G]]
 
-    val maxY = geos.map( geo => transformer.maxY(geo) ).max
-    val minX = geos.map( geo => transformer.minX(geo) ).min
-    val maxX = geos.map( geo => transformer.maxX(geo) ).max
-    val minY = geos.map( geo => transformer.minY(geo) ).min
+//    val maxY = geos.map( geo => transformer.maxY(geo) ).max
+//    val minX = geos.map( geo => transformer.minX(geo) ).min
+//    val maxX = geos.map( geo => transformer.maxX(geo) ).max
+//    val minY = geos.map( geo => transformer.minY(geo) ).min
+//
+//    val upScale = Math.min( windowHeight / (maxY - minY), windowWidth / (maxX - minX) )
 
-    val upScale = Math.min( windowHeight / (maxY - minY), windowWidth / (maxX - minX) )
+    val scalingInfo = ScalingInformation(geos, windowHeightMax, windowWidthMax)
 
     geos.map{ geo =>
-      val translated = transformer.translate(-1 * minX, -1 * minY)(geo)
-      val scaled = transformer.scale(upScale, -1 * upScale)(translated)
-      transformer.translate(0, windowHeight + ((maxY - minY) * upScale))(scaled)
+      val translated = transformer.translate(-1 * scalingInfo.minX, -1 * scalingInfo.minY)(geo)
+      val scaled = transformer.scale(scalingInfo.upScale, -1 * scalingInfo.upScale)(translated)
+//      transformer.translate(offset, offset + scalingInfo.maxY * scalingInfo.upScale)(scaled)
+      transformer.translate(offset, offset + (scalingInfo.maxY - scalingInfo.minY) * scalingInfo.upScale)(scaled)
+//      scaled
     }
   }
+}
+
+private case class ScalingInformation[G <: GeoJson.Geometry : Java2Dable : GeoTransformer]
+(
+  geometries: Seq[G],
+  windowHeightMax: Double,
+  windowWidthMax: Double
+  )(
+  implicit val transformer: GeoTransformer[G]
+  ) {
+  val maxX = geometries.map( geometry => transformer.maxX(geometry) ).max
+  val maxY = geometries.map( geometry => transformer.maxY(geometry) ).max
+  val minX = geometries.map( geometry => transformer.minX(geometry) ).min
+  val minY = geometries.map( geometry => transformer.minY(geometry) ).min
+
+  val upScale = Math.min( windowHeightMax / (maxY - minY), windowWidthMax / (maxX - minX) )
 }

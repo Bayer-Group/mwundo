@@ -8,6 +8,7 @@ import org.scalatest.{FunSpec, Matchers}
  */
 class GeoJsonViewer_UT extends FunSpec with Matchers {
   describe("GeoJsonViewer"){
+    implicit val offset = 0
     it("should properly transform GeoJson to the origin in window-filling, flipped Y coordinates"){
 
       val screenSize = 100
@@ -23,11 +24,11 @@ class GeoJsonViewer_UT extends FunSpec with Matchers {
       val translated = GeoJsonViewer.transformToJava2DLocalCoordinates(screenSize, screenSize, Seq(testPolygon))
 
       val expected = Polygon(Seq(Seq(
-        Coordinate(0, 100),
-        Coordinate(100, 100),
-        Coordinate(100, 80),
-        Coordinate(0, 80),
-        Coordinate(0, 100)
+        Coordinate(0, 20),
+        Coordinate(100, 20),
+        Coordinate(100, 0),
+        Coordinate(0, 0),
+        Coordinate(0, 20)
       )))
 
       translated shouldBe Seq(expected)
@@ -47,10 +48,10 @@ class GeoJsonViewer_UT extends FunSpec with Matchers {
       val translated = GeoJsonViewer.transformToJava2DLocalCoordinates(screenSize, screenSize, Seq(testPolygon))
 
       val expected = Polygon(Seq(Seq(
-        Coordinate(0, 100),
-        Coordinate(100, 100),
-        Coordinate(0, 80),
-        Coordinate(0, 100)
+        Coordinate(0, 20),
+        Coordinate(100, 20),
+        Coordinate(0, 0),
+        Coordinate(0, 20)
       )))
 
       translated shouldBe Seq(expected)
