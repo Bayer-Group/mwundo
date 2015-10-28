@@ -53,7 +53,7 @@ object GeoJsonViewer {
     geos.map{ geo =>
       val translated = transformer.translate(-1 * minX, -1 * minY)(geo)
       val scaled = transformer.scale(upScale, -1 * upScale)(translated)
-      transformer.translate(0, windowHeight)(scaled)
+      transformer.translate(0, windowHeight + ((maxY - minY) * upScale))(scaled)
     }
   }
 }
