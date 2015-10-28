@@ -24,7 +24,7 @@ object Java2Dable {
         val outPolygon = new PolygonShape()
         polygon.foreach { ring =>
           ring.foreach { coord =>
-            addToRing.invoke(outPolygon, new Point2D.Double(coord.y.toDouble, coord.x.toDouble).asInstanceOf[Object]) // also swap X/Y for geo to geom
+            addToRing.invoke(outPolygon, new Point2D.Double(coord.x.toDouble, coord.y.toDouble).asInstanceOf[Object])
           }
           endRing.invoke(outPolygon)
         }
@@ -39,7 +39,7 @@ object Java2Dable {
       val outPolygon = new PolygonShape()
       polygon.coordinates.foreach { ring =>
         ring.foreach { coord =>
-          addToRing.invoke(outPolygon, new Point2D.Double(coord.y.toDouble, coord.x.toDouble).asInstanceOf[Object]) // also swap X/Y for geo to geom
+          addToRing.invoke(outPolygon, new Point2D.Double(coord.x.toDouble, coord.y.toDouble).asInstanceOf[Object])
         }
         endRing.invoke(outPolygon)
       }

@@ -50,7 +50,7 @@ object GeoJsonImplicits {
     private def midLong = (minLong + maxLong) / 2.0
     val heightKm = Utils.haversineDistance(minLat, midLong, maxLat, midLong)
 
-    def translatedToOrigin = translated(-1 * maxLong, -1 * maxLat)
+    def translatedToOrigin = translated(-1 * minLong, -1 * minLat)
 
     def boundingBoxAreaKmSq = Utils.latLongRectangleArea(minLat, minLong, maxLat, maxLong)
 
