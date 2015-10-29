@@ -1,6 +1,6 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom.{GeometryFactory, Envelope, Geometry}
+import com.vividsolutions.jts.geom.{LineString, GeometryFactory, Envelope, Geometry}
 import collection.JavaConverters._
 
 /**
@@ -38,9 +38,11 @@ object Utils {
     val clipPoly: Geometry = geom.getFactory.toGeometry(clipEnv)
 
     val geos = Seq.tabulate(geom.getNumGeometries)(i => geom.getGeometryN(i))
+
+    // LineStrings are from clipped polygons that no longer have any area, discard them
     val clippedGeos = geos.collect{
-      case g: Geometry if clipEnv.contains(g.getEnvelopeInternal)   => g
-      case g: Geometry if clipEnv.intersects(g.getEnvelopeInternal) =>
+      case g: Geometry if ! g.isInstanceOf[LineString] && clipEnv.contains(g.getEnvelopeInternal)   => g
+      case g: Geometry if ! g.isInstanceOf[LineString] && clipEnv.intersects(g.getEnvelopeInternal) =>
         val intermedResult = clipPoly.intersection(g)
         intermedResult.setUserData(g.getUserData)
         intermedResult
@@ -54,9 +56,11 @@ object Utils {
   def clip(geom: Geometry, clipPoly: Geometry): Geometry = {
 
     val geos = Seq.tabulate(geom.getNumGeometries)(i => geom.getGeometryN(i))
+
+    // LineStrings are from clipped polygons that no longer have any area, discard them
     val clippedGeos = geos.collect{
-      case g: Geometry if clipPoly.contains(g)   => g
-      case g: Geometry if clipPoly.intersects(g) =>
+      case g: Geometry if ! g.isInstanceOf[LineString] && clipPoly.contains(g)   => g
+      case g: Geometry if ! g.isInstanceOf[LineString] && clipPoly.intersects(g) =>
         val intermedResult = clipPoly.intersection(g)
         intermedResult.setUserData(g.getUserData)
         intermedResult
