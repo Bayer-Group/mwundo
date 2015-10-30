@@ -1,6 +1,6 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom.{LineString, GeometryFactory, Envelope, Geometry}
+import com.vividsolutions.jts.geom._
 import collection.JavaConverters._
 
 /**
@@ -34,7 +34,7 @@ object Utils {
   }
 
   //TODO: this might not work for envelopes with convexities?
-  def clip(geom: Geometry, clipEnv: Envelope): Geometry = {
+  def clip(geom: Geometry, clipEnv: Envelope): GeometryCollection = {
     val clipPoly: Geometry = geom.getFactory.toGeometry(clipEnv)
 
     val geos = Seq.tabulate(geom.getNumGeometries)(i => geom.getGeometryN(i))
@@ -47,13 +47,15 @@ object Utils {
         intermedResult.setUserData(g.getUserData)
         intermedResult
       // case completely outside of the clipping envelope, do not include in output list
+    }.collect{
+      case g: Geometry if ! g.isInstanceOf[LineString] => g
     }
 
     geom.getFactory.createGeometryCollection(GeometryFactory.toGeometryArray(clippedGeos.asJavaCollection))
   }
 
   //TODO: this might not work for envelopes with convexities?
-  def clip(geom: Geometry, clipPoly: Geometry): Geometry = {
+  def clip(geom: Geometry, clipPoly: Geometry): GeometryCollection = {
 
     val geos = Seq.tabulate(geom.getNumGeometries)(i => geom.getGeometryN(i))
 
@@ -65,6 +67,8 @@ object Utils {
         intermedResult.setUserData(g.getUserData)
         intermedResult
       // case completely outside of the clipping envelope, do not include in output list
+    }.collect {
+      case g: Geometry if ! g.isInstanceOf[LineString] => g
     }
 
     geom.getFactory.createGeometryCollection(GeometryFactory.toGeometryArray(clippedGeos.asJavaCollection))

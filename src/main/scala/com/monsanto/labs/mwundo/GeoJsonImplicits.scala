@@ -9,10 +9,6 @@ import com.vividsolutions.jts.geom.{Geometry, GeometryFactory}
 
 object GeoJsonImplicits {
 
-  implicit class RichJTSGeometry(geom: Geometry){
-    def as[G <: GeoJson.Geometry : JTSGeoFormat]: G = implicitly[JTSGeoFormat[G]].fromJSTGeo(geom)
-  }
-
   implicit class RichGeoJsonFeature[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer, P](feature: Feature[G, P])
     extends GeometryOps[G](feature.geometry) {
 
