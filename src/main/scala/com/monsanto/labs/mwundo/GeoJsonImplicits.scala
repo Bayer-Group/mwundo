@@ -58,5 +58,7 @@ object GeoJsonImplicits {
     def boundingBoxAreaAcres = 247.105 * boundingBoxAreaKmSq
 
     def areaInAcres = asJTS.getArea / asJTS.getEnvelope.getArea * boundingBoxAreaAcres
+
+    def areaInKmSq = asJTS.getArea / asJTS.getEnvelope.getArea * boundingBoxAreaKmSq
   }
 }
