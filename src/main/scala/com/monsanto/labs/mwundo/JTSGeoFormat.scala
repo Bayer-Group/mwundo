@@ -10,8 +10,8 @@ import com.vividsolutions.jts.geom._
  */
 
 trait JTSGeoFormat[G <: GeoJson.Geometry] {
-  def toJSTGeo(g: G, gf: GeometryFactory): Geometry
-  def fromJSTGeo(geo: Geometry): G
+  def toJTSGeo(g: G, gf: GeometryFactory): Geometry
+  def fromJTSGeo(geo: Geometry): G
 }
 object JTSGeoFormat {
 
@@ -22,7 +22,7 @@ object JTSGeoFormat {
       new LinearRing(new CoordinateArraySequence(uniqueCoords :+ uniqueCoords.head), gf) // connect the ring back to the head
     }
 
-    def toJSTGeo(g: GeoJson.MultiPolygon, gf: GeometryFactory) = gf.createMultiPolygon(
+    def toJTSGeo(g: GeoJson.MultiPolygon, gf: GeometryFactory) = gf.createMultiPolygon(
       g.coordinates.map { polyCoordLists =>
         val outerHull = polyCoordLists.head
         val interiorHoles = polyCoordLists.tail
@@ -32,7 +32,7 @@ object JTSGeoFormat {
 
     private def toGeoJsonCoord(c: Coordinate) = GeoJson.Coordinate(c.x, c.y)
 
-    def fromJSTGeo(geo: Geometry): GeoJson.MultiPolygon = {
+    def fromJTSGeo(geo: Geometry): GeoJson.MultiPolygon = {
 
       val polys = Seq.tabulate(geo.getNumGeometries)(i => geo.getGeometryN(i).asInstanceOf[Polygon])
       val all = polys.map(p =>

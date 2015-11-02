@@ -11,7 +11,7 @@ import scala.reflect.ClassTag
  */
 object JTSGeometryImplicits {
   implicit class RichJTSGeometry(geom: Geometry){
-    def as[G <: GeoJson.Geometry : JTSGeoFormat]: G = implicitly[JTSGeoFormat[G]].fromJSTGeo(geom)
+    def as[G <: GeoJson.Geometry : JTSGeoFormat]: G = implicitly[JTSGeoFormat[G]].fromJTSGeo(geom)
   }
 
 //  implicit class RichGeometryCollection[G <: Geometry](geomC: GeometryCollection)

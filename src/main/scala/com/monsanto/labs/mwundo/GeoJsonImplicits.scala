@@ -26,7 +26,7 @@ object GeoJsonImplicits {
     private val geoX: GeoTransformer[G] = implicitly
     private val jtsGeoFormat: JTSGeoFormat[G] = implicitly
 
-    def asJTS = jtsGeoFormat.toJSTGeo(geometry, RichGeoJsonFeature.geoFac)
+    def asJTS = jtsGeoFormat.toJTSGeo(geometry, RichGeoJsonFeature.geoFac)
 
     def translated(x: Double, y: Double) = geoX.translate(x, y)(geometry)
     def scaled(x: Double, y: Double) = geoX.scale(x, y)(geometry)
