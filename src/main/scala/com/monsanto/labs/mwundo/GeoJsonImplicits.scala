@@ -1,6 +1,6 @@
 package com.monsanto.labs.mwundo
 
-import com.monsanto.labs.mwundo.GeoJson.Feature
+import com.monsanto.labs.mwundo.GeoJson.{Coordinate, Feature}
 import com.vividsolutions.jts.geom.{Geometry, GeometryFactory}
 
 /**
@@ -56,5 +56,10 @@ object GeoJsonImplicits {
     def areaInAcres = asJTS.getArea / asJTS.getEnvelope.getArea * boundingBoxAreaAcres
 
     def areaInKmSq = asJTS.getArea / asJTS.getEnvelope.getArea * boundingBoxAreaKmSq
+
+    def centroid = {
+      val centroid = asJTS.getCentroid.getCoordinate
+      Coordinate(BigDecimal(centroid.x), BigDecimal(centroid.y))
+    }
   }
 }

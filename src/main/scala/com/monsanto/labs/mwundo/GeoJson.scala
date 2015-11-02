@@ -46,12 +46,6 @@ object GeoJson {
     require(coordinates.nonEmpty, "coordinates vector can not be empty")
     require(coordinates.forall(_.nonEmpty), "coordinates sub vector can not be empty")
     require(coordinates.forall(x => x.forall(_.nonEmpty)), "coordinates sub sub vector can not be empty")
-    val gf = new GeometryFactory()
-    def centroid = {
-      val jts = JTSGeoFormat.MultiPolygonConverter.toJTSGeo(this, gf)
-      val centerPoint = jts.getCentroid.getCoordinate
-      new Coordinate(BigDecimal(centerPoint.x), BigDecimal(centerPoint.y))
-    }
     override val `type`: String = "MultiPolygon"
   }
 
