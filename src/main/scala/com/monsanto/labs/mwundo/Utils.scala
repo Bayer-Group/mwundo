@@ -33,6 +33,12 @@ object Utils {
     d
   }
 
+  def haversineDistanceFromCoordinates(coordinate1: GeoJson.Coordinate, coordinate2: GeoJson.Coordinate, r: Double = meanRadiusOfEarthKm): Double = {
+    val (c1long, c1lat) = (coordinate1.x.toDouble, coordinate1.y.toDouble)
+    val (c2long, c2lat) = (coordinate2.x.toDouble, coordinate2.y.toDouble)
+    haversineDistance(c1lat, c1long, c2lat, c2long, r)
+  }
+
   //TODO: this might not work for envelopes with convexities?
   def clip(geom: Geometry, clipEnv: Envelope): GeometryCollection = {
     val clipPoly: Geometry = geom.getFactory.toGeometry(clipEnv)
