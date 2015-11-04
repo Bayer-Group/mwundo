@@ -8,7 +8,7 @@ import com.monsanto.labs.mwundo._
 /**
  * Created by Ryan Richt on 10/26/15
  */
-trait GeoTransformer[G <: GeoJson.Geometry] {
+trait GeoTransformer[G] {
   def translate(x: Double, y: Double)(geo: G): G
   def scale(x: Double, y: Double)(geo: G): G
 
@@ -20,6 +20,27 @@ trait GeoTransformer[G <: GeoJson.Geometry] {
   def minY(geo: G): Double
 }
 object GeoTransformer {
+
+  implicit def SeqGeoTransformer[G : GeoTransformer] = new GeoTransformer[Seq[G]]{
+
+    val gXform = implicitly[GeoTransformer[G]]
+
+    def translate(x: Double, y: Double)(geos: Seq[G]): Seq[G] = geos.map(gXform.translate(x, y))
+
+    def maxY(geos: Seq[G]): Double = geos.map( gXform.maxY ).max
+
+    def transform(matrix: DenseMatrix[Double])(geos: Seq[G]): Seq[G] = geos.map(gXform.transform(matrix))
+
+    def minX(geos: Seq[G]): Double = geos.map( gXform.minX ).min
+
+    def maxX(geos: Seq[G]): Double = geos.map( gXform.maxX ).max
+
+    def scale(x: Double, y: Double)(geos: Seq[G]): Seq[G] = geos.map(gXform.scale(x, y))
+
+    def minY(geos: Seq[G]): Double = geos.map( gXform.minY ).min
+  }
+
+
   implicit object MultiPolygonGeoTransformer extends GeoTransformer[GeoJson.MultiPolygon] {
     def translate(x: Double, y: Double)(geo: GeoJson.MultiPolygon) = {
       GeoJson.MultiPolygon(

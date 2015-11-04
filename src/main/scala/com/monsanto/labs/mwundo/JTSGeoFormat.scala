@@ -9,11 +9,25 @@ import com.vividsolutions.jts.geom._
  * Created by Ryan Richt on 10/26/15
  */
 
-trait JTSGeoFormat[G <: GeoJson.Geometry] {
+trait JTSGeoFormat[G] {
   def toJTSGeo(g: G, gf: GeometryFactory): Geometry
   def fromJTSGeo(geo: Geometry): G
 }
 object JTSGeoFormat {
+
+  implicit def SeqConverter[G : JTSGeoFormat] = new JTSGeoFormat[Seq[G]] {
+
+    val gConverter = implicitly[JTSGeoFormat[G]]
+
+    def toJTSGeo(g: Seq[G], gf: GeometryFactory): Geometry =
+      new GeometryCollection( g.map( innerG => gConverter.toJTSGeo(innerG, gf) ).toArray, gf)
+
+    def fromJTSGeo(geo: Geometry): Seq[G] = {
+      val coll = geo.asInstanceOf[GeometryCollection]
+      val geos = Seq.tabulate(coll.getNumGeometries)(coll.getGeometryN)
+      geos.map(gConverter.fromJTSGeo)
+    }
+  }
 
   implicit object MultiPolygonConverter extends JTSGeoFormat[GeoJson.MultiPolygon] {
 

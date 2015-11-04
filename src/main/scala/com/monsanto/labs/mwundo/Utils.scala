@@ -54,7 +54,7 @@ object Utils {
         intermedResult
       // case completely outside of the clipping envelope, do not include in output list
     }.collect{
-      case g: Geometry if ! g.isInstanceOf[LineString] => g
+      case g: Geometry if g.isInstanceOf[Polygon] => g
     }
 
     geom.getFactory.createGeometryCollection(GeometryFactory.toGeometryArray(clippedGeos.asJavaCollection))
@@ -74,7 +74,7 @@ object Utils {
         intermedResult
       // case completely outside of the clipping envelope, do not include in output list
     }.collect {
-      case g: Geometry if ! g.isInstanceOf[LineString] => g
+      case g: Geometry if g.isInstanceOf[Polygon] => g
     }
 
     geom.getFactory.createGeometryCollection(GeometryFactory.toGeometryArray(clippedGeos.asJavaCollection))

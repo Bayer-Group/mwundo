@@ -1,13 +1,18 @@
 package com.monsanto.labs.mwundo
 
-import com.monsanto.labs.mwundo.GeoJson.{Coordinate, Feature}
+import com.monsanto.labs.mwundo.GeoJson.{FeatureCollection, Coordinate, Feature}
 import com.vividsolutions.jts.geom.{Geometry, GeometryFactory}
 
 /**
  * Created by Ryan Richt on 10/26/15
  */
 
+case class BoundingBox(minX: Double, minY: Double, width: Double, height: Double)
+
 object GeoJsonImplicits {
+
+  implicit class RichGeoJsonFeatureCollection[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer, P](feature: FeatureCollection[G, P])
+    extends GeometryOps[Seq[G]](feature.features.map(_.geometry))
 
   implicit class RichGeoJsonFeature[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer, P](feature: Feature[G, P])
     extends GeometryOps[G](feature.geometry) {
@@ -19,10 +24,10 @@ object GeoJsonImplicits {
     val geoFac = new GeometryFactory()
   }
 
-  implicit class RichGeoJsonGeometry[G <: GeoJson.Geometry : JTSGeoFormat : GeoTransformer](val geometry: G)
+  implicit class RichGeoJsonGeometry[G : JTSGeoFormat : GeoTransformer](val geometry: G)
     extends GeometryOps[G](geometry)
 
-  abstract class GeometryOps[G <: GeoJson.Geometry : GeoTransformer : JTSGeoFormat](geometry: G){
+  abstract class GeometryOps[G : GeoTransformer : JTSGeoFormat](geometry: G){
     private val geoX: GeoTransformer[G] = implicitly
     private val jtsGeoFormat: JTSGeoFormat[G] = implicitly
 
@@ -61,5 +66,7 @@ object GeoJsonImplicits {
       val centroid = asJTS.getCentroid.getCoordinate
       Coordinate(BigDecimal(centroid.x), BigDecimal(centroid.y))
     }
+
+    def boundingBox = BoundingBox(minLong, minLat, width, height)
   }
 }
