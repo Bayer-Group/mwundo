@@ -8,14 +8,12 @@ import javax.swing.JPanel
 import breeze.linalg.DenseMatrix
 import com.vividsolutions.jts.geom.GeometryFactory
 
-case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](geos: Seq[G])(implicit offset: Int = 10) extends JPanel {
+case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](geos: Seq[G], windowWidthMax: Int = 700, windowHeightMax: Int = 700)(implicit offset: Int = 10) extends JPanel {
   import java.awt.Graphics
   import java.awt.Graphics2D
 
   import javax.swing.JFrame
 
-  val windowWidthMax = 700
-  val windowHeightMax = 700
   val viewerBarHeight = 23
 //  implicit val offset = 10
 
@@ -38,7 +36,7 @@ case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](ge
     val correctedWindowWidth = geoWidth + 2 * offset
     val correctedWindowHeight = geoHeight + 2 * offset + viewerBarHeight
     val f = new JFrame()
-    f.getContentPane.add(new GeoJsonViewer(geos))
+    f.getContentPane.add(this)
     f.setSize(correctedWindowWidth, correctedWindowHeight)
     f.setVisible(true)
   }
@@ -50,21 +48,12 @@ object GeoJsonViewer {
 
     val transformer = implicitly[GeoTransformer[G]]
 
-//    val maxY = geos.map( geo => transformer.maxY(geo) ).max
-//    val minX = geos.map( geo => transformer.minX(geo) ).min
-//    val maxX = geos.map( geo => transformer.maxX(geo) ).max
-//    val minY = geos.map( geo => transformer.minY(geo) ).min
-//
-//    val upScale = Math.min( windowHeight / (maxY - minY), windowWidth / (maxX - minX) )
-
     val scalingInfo = ScalingInformation(geos, windowHeightMax, windowWidthMax)
 
     geos.map{ geo =>
       val translated = transformer.translate(-1 * scalingInfo.minX, -1 * scalingInfo.minY)(geo)
       val scaled = transformer.scale(scalingInfo.upScale, -1 * scalingInfo.upScale)(translated)
-//      transformer.translate(offset, offset + scalingInfo.maxY * scalingInfo.upScale)(scaled)
       transformer.translate(offset, offset + (scalingInfo.maxY - scalingInfo.minY) * scalingInfo.upScale)(scaled)
-//      scaled
     }
   }
 }
@@ -74,9 +63,10 @@ private case class ScalingInformation[G <: GeoJson.Geometry : Java2Dable : GeoTr
   geometries: Seq[G],
   windowHeightMax: Double,
   windowWidthMax: Double
-  )(
-  implicit val transformer: GeoTransformer[G]
-  ) {
+  ){
+
+  val transformer = implicitly[GeoTransformer[G]]
+
   val maxX = geometries.map( geometry => transformer.maxX(geometry) ).max
   val maxY = geometries.map( geometry => transformer.maxY(geometry) ).max
   val minX = geometries.map( geometry => transformer.minX(geometry) ).min
