@@ -8,6 +8,16 @@ import javax.swing.JPanel
 import breeze.linalg.DenseMatrix
 import com.vividsolutions.jts.geom.GeometryFactory
 
+/**
+ * viewer class of GeoJson objects
+ * @param geos
+ * @param windowWidthMax
+ * @param windowHeightMax
+ * @param ev1
+ * @param ev2
+ * @param offset
+ * @tparam G
+ */
 case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](geos: Seq[G], windowWidthMax: Int = 700, windowHeightMax: Int = 700)(implicit offset: Int = 10) extends JPanel {
   import java.awt.Graphics
   import java.awt.Graphics2D
@@ -15,7 +25,6 @@ case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](ge
   import javax.swing.JFrame
 
   val viewerBarHeight = 23
-//  implicit val offset = 10
 
   override def paint(g: Graphics) = {
 
@@ -29,6 +38,9 @@ case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](ge
     shapes.foreach{ s => g.asInstanceOf[Graphics2D].draw(s) }
   }
 
+  /**
+   * displays geometry in Java Swing
+   */
   def display() = {
     val scalingInfo = ScalingInformation(geos, windowHeightMax, windowWidthMax)
     val geoWidth = ((scalingInfo.maxX - scalingInfo.minX) * scalingInfo.upScale).toInt
@@ -43,6 +55,15 @@ case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](ge
 }
 
 object GeoJsonViewer {
+  /**
+   * transforms GeoJson object into geometries that are viewable in the GeoJsonViewer
+   * @param windowWidthMax
+   * @param windowHeightMax
+   * @param geos
+   * @param offset
+   * @tparam G
+   * @return
+   */
   def transformToJava2DLocalCoordinates[G <: GeoJson.Geometry : Java2Dable : GeoTransformer]
   (windowWidthMax: Double, windowHeightMax: Double, geos: Seq[G])(implicit offset: Int) = {
 

@@ -6,9 +6,6 @@ import scala.collection.generic.{GenericCompanion, TraversableFactory, GenericTr
 import scala.collection.{TraversableLike, mutable}
 import scala.reflect.ClassTag
 
-/**
- * Created by dgdale on 10/30/15.
- */
 object JTSGeometryImplicits {
   implicit class RichJTSGeometry(geom: Geometry){
     def as[G <: GeoJson.Geometry : JTSGeoFormat]: G = implicitly[JTSGeoFormat[G]].fromJTSGeo(geom)

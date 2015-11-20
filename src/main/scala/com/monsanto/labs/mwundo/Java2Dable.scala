@@ -18,7 +18,11 @@ object Java2Dable {
   endRing.setAccessible(true)
 
   implicit object MultiPolygonJava2D extends Java2Dable[GeoJson.MultiPolygon] {
-
+    /**
+     * converts GeoJson MultiPolygon into JTS MultiPolygon
+     * @param g
+     * @return
+     */
     def toJava2D(g: GeoJson.MultiPolygon) = {
       g.coordinates.map { polygon =>
         val outPolygon = new PolygonShape()
@@ -35,6 +39,11 @@ object Java2Dable {
 
   implicit object PolygonJava2D extends Java2Dable[GeoJson.Polygon] {
 
+    /**
+     * converts GeoJson Polygon into JTS Polygon
+     * @param polygon
+     * @return
+     */
     def toJava2D(polygon: GeoJson.Polygon) = {
       val outPolygon = new PolygonShape()
       polygon.coordinates.foreach { ring =>

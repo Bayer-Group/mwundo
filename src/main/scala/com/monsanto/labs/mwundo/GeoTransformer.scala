@@ -5,9 +5,6 @@ import com.monsanto.labs.mwundo.GeoJson.{Coordinate, MultiPolygon}
 import com.monsanto.labs.mwundo._
 
 
-/**
- * Created by Ryan Richt on 10/26/15
- */
 trait GeoTransformer[G] {
   def translate(x: Double, y: Double)(geo: G): G
   def scale(x: Double, y: Double)(geo: G): G
