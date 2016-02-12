@@ -19,8 +19,8 @@ class GeometryOps_UT extends FunSpec with Matchers {
 
   describe("Geometry Ops") {
     it("should calculate the area of Lee County, IA") {
-      val areaInAcres = 344958
-      val areaInKmSq = 1396
+      val areaInAcres = 344958D
+      val areaInKmSq = 1396D
       val county = io.
         Source.
         fromInputStream(getClass.getClassLoader.getResourceAsStream("Lee.geo.json")).
@@ -29,9 +29,9 @@ class GeometryOps_UT extends FunSpec with Matchers {
         parseJson.
         convertTo[GeoJson.FeatureCollection[GeoJson.MultiPolygon, County]].features.head
 
-      county.areaInAcres / areaInAcres shouldBe 1.0 +- 1e-2
+      county.areaInAcres() / areaInAcres shouldBe 1.0 +- 1e-2
 
-      county.areaInKmSq / areaInKmSq shouldBe 1.0 +- 1e-2
+      county.areaInKmSq() / areaInKmSq shouldBe 1.0 +- 1e-2
     }
 
     it("should find the centroid of a multipolygon") {

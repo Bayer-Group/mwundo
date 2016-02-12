@@ -4,7 +4,7 @@ GeoJSON object, spray-json formats, and basic Geo/Geometry
 ## Include in your project
 Add the following to your SBT dependencies:
 
-`"com.monsanto.labs"          %% "mwundo"                 % "0.0.47"`
+`"com.monsanto.labs"          %% "mwundo"                 % "0.0.48"`
 
 You may also need to add:
 
