@@ -1,4 +1,6 @@
 # mwundo
+[![Build Status](https://travis-ci.org/MonsantoCo/mwundo.svg?branch=master)](https://travis-ci.org/MonsantoCo/mwundo)
+
 GeoJSON object, spray-json formats, and basic Geo/Geometry
 
 ## Include in your project
