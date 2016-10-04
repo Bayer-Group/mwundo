@@ -27,7 +27,7 @@ class GeometryOps_UT extends FunSpec with Matchers {
         getLines().
         mkString("").
         parseJson.
-        convertTo[GeoJson.FeatureCollection[GeoJson.MultiPolygon, County]].features.head
+        convertTo[GeoJson.Feature[GeoJson.MultiPolygon, County]]
 
       county.areaInAcres() / areaInAcres shouldBe 1.0 +- 1e-2
 

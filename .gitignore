@@ -17,3 +17,5 @@ dist
 /.settings
 native/
 src/main/resources
+.ensime
+.ensime_cache/

@@ -3,11 +3,11 @@ import sbt._
 object Dependencies {
 
   private val akkaV  = "2.3.9"
-  private val sprayV = "1.3.3"
+  private val sprayV = "1.3.2"
   private val breeze = "0.11.2"
 
   lazy val compile = Seq(
-    "io.spray"                  %% "spray-json"          % "1.3.1"
+    "io.spray"                  %% "spray-json"          % sprayV
     ,"com.vividsolutions"        % "jts"                 % "1.12"
     // -- breeze --
     ,"org.scalanlp"               %% "breeze"            % breeze
