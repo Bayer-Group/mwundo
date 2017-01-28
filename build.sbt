@@ -7,9 +7,18 @@ bintrayOrganization := Some("monsanto")
 
 licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause"))
 
-scalaVersion := "2.11.8"
+crossScalaVersions := Seq("2.11.8", "2.12.1")
+scalaVersion := "2.12.1"
 
 libraryDependencies ++= Dependencies.compile ++ Dependencies.test
+
+val scalacVersionOptions: Map[String, Seq[String]] = Map(
+  "2.11" -> Seq(
+    "-Yclosure-elim",
+    "-Yinline",
+    "-target:jvm-1.7"),
+  "2.12" -> Seq.empty
+)
 
 scalacOptions ++= Seq(
   "-feature",
@@ -18,11 +27,9 @@ scalacOptions ++= Seq(
   "-Xcheckinit",
   "-Xlint",
   "-Xverify",
-  "-Yclosure-elim",
-  "-Yinline",
   "-Yno-adapted-args",
-  "-encoding", "utf8",
-  "-target:jvm-1.7")
+  "-encoding", "utf8") ++
+  scalacVersionOptions(scalaBinaryVersion.value)
 
 
 testOptions in Test ++= Seq(
@@ -32,4 +39,3 @@ testOptions in Test ++= Seq(
 )
 
 PluginConfig.settings
-

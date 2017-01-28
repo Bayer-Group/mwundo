@@ -1,2 +1,10 @@
 language: scala
-script: "sbt clean coverage test"
+
+jdk:
+  - oraclejdk8
+
+scala:
+  - 2.11.8
+  - 2.12.1
+
+script: "sbt ++$TRAVIS_SCALA_VERSION clean coverage test"

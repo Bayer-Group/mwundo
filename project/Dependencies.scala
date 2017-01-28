@@ -4,7 +4,7 @@ object Dependencies {
 
   private val akkaV  = "2.3.9"
   private val sprayV = "1.3.2"
-  private val breeze = "0.11.2"
+  private val breeze = "0.13"
 
   lazy val compile = Seq(
     "io.spray"                  %% "spray-json"          % sprayV
@@ -15,10 +15,9 @@ object Dependencies {
   )
 
   lazy val test = Seq(
-    "org.scalatest"           %% "scalatest"                    % "2.2.4"
-    ,"org.scalacheck"          %% "scalacheck"                   % "1.12.2"
-    ,"org.scalamock"           %% "scalamock-scalatest-support"  % "3.2"
+    "org.scalatest"           %% "scalatest"                    % "3.0.1"
+    ,"org.scalacheck"          %% "scalacheck"                   % "1.13.4"
+    ,"org.scalamock"           %% "scalamock-scalatest-support"  % "3.5.0"
     ,"org.pegdown"             %  "pegdown"                      % "1.4.2"
-    ,"io.spray"                %% "spray-testkit"                % sprayV
   ).map(_ % "test")
 }
