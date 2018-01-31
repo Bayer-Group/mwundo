@@ -1,9 +1,7 @@
 package com.monsanto.labs.mwundo
 
-import com.monsanto.labs.mwundo._
-import com.vividsolutions.jts.geom.MultiPolygon
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
 import com.vividsolutions.jts.geom._
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
 
 /**
  * Created by Ryan Richt on 10/26/15

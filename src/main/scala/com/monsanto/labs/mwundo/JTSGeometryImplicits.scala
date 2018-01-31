@@ -1,10 +1,6 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom.{GeometryFactory, GeometryCollection, Geometry}
-
-import scala.collection.generic.{GenericCompanion, TraversableFactory, GenericTraversableTemplate, CanBuildFrom}
-import scala.collection.{TraversableLike, mutable}
-import scala.reflect.ClassTag
+import com.vividsolutions.jts.geom.Geometry
 
 object JTSGeometryImplicits {
   implicit class RichJTSGeometry(geom: Geometry){

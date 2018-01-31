@@ -1,7 +1,5 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom.GeometryFactory
-
 /**
  * Types for GeoJSON spec: http://geojson.org/geojson-spec.html
  */
