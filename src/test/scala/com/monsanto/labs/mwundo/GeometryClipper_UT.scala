@@ -6,7 +6,7 @@ package com.monsanto.labs.mwundo
 //import com.vividsolutions.jts.triangulate.VoronoiDiagramBuilder
 //import org.scalatest.{Matchers, FunSpec}
 
-import collection.JavaConverters._
+//import collection.JavaConverters._
 
 /**
  * Created by Ryan Richt on 10/22/15

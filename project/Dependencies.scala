@@ -8,7 +8,7 @@ object Dependencies {
 
   lazy val compile = Seq(
     "io.spray"                  %% "spray-json"          % sprayV
-    ,"com.vividsolutions"        % "jts"                 % "1.12"
+    ,"com.vividsolutions"       %  "jts-core"            % "1.14.0"
     // -- breeze --
     ,"org.scalanlp"               %% "breeze"            % breeze
     ,"org.scalanlp"               %% "breeze-natives"    % breeze

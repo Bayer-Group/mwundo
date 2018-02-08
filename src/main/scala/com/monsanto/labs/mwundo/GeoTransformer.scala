@@ -1,8 +1,7 @@
 package com.monsanto.labs.mwundo
 
-import breeze.linalg.{DenseVector, DenseMatrix}
+import breeze.linalg.{DenseMatrix, DenseVector}
 import com.monsanto.labs.mwundo.GeoJson.{Coordinate, MultiPolygon}
-import com.monsanto.labs.mwundo._
 
 
 trait GeoTransformer[G] {

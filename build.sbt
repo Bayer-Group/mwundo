@@ -1,14 +1,14 @@
 
 name := "mwundo"
 organization := "com.monsanto.labs"
-version := "0.1.2"
+version := "0.1.3"
 
 bintrayOrganization := Some("monsanto")
 
 licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause"))
 
-crossScalaVersions := Seq("2.11.8", "2.12.1")
-scalaVersion := "2.12.1"
+crossScalaVersions := Seq("2.11.8", "2.12.4")
+scalaVersion := "2.12.4"
 
 libraryDependencies ++= Dependencies.compile ++ Dependencies.test
 

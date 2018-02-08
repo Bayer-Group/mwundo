@@ -1,7 +1,7 @@
 package com.monsanto.labs.mwundo
 
-import com.monsanto.labs.mwundo.GeoJson.{FeatureCollection, Coordinate, Feature}
-import com.vividsolutions.jts.geom.{Geometry, GeometryFactory}
+import com.monsanto.labs.mwundo.GeoJson.{Coordinate, Feature, FeatureCollection}
+import com.vividsolutions.jts.geom.GeometryFactory
 
 /**
  * Bounding box used to wrap GeoJson shapes so various area calculations can be performed

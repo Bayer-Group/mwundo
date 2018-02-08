@@ -5,9 +5,6 @@ package com.monsanto.labs.mwundo
  */
 import javax.swing.JPanel
 
-import breeze.linalg.DenseMatrix
-import com.vividsolutions.jts.geom.GeometryFactory
-
 /**
  * viewer class of GeoJson objects
  * @param geos
@@ -19,16 +16,12 @@ import com.vividsolutions.jts.geom.GeometryFactory
  * @tparam G
  */
 case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](geos: Seq[G], windowWidthMax: Int = 700, windowHeightMax: Int = 700)(implicit offset: Int = 10) extends JPanel {
-  import java.awt.Graphics
-  import java.awt.Graphics2D
-
+  import java.awt.{Graphics, Graphics2D}
   import javax.swing.JFrame
 
   val viewerBarHeight = 23
 
   override def paint(g: Graphics) = {
-
-    val transformer = implicitly[GeoTransformer[G]]
 
     val translated = GeoJsonViewer.transformToJava2DLocalCoordinates(windowWidthMax, windowHeightMax, geos)
 
