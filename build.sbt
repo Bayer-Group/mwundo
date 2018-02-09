@@ -1,7 +1,6 @@
 
 name := "mwundo"
 organization := "com.monsanto.labs"
-version := "0.1.3"
 
 bintrayOrganization := Some("monsanto")
 
@@ -9,6 +8,7 @@ licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause"))
 
 crossScalaVersions := Seq("2.11.8", "2.12.4")
 scalaVersion := "2.12.4"
+releaseCrossBuild := true
 
 libraryDependencies ++= Dependencies.compile ++ Dependencies.test
 
@@ -39,3 +39,25 @@ testOptions in Test ++= Seq(
 )
 
 PluginConfig.settings
+
+// for bintray
+
+bintrayOrganization := Some("monsanto")
+
+licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause"))
+
+bintrayReleaseOnPublish := ! isSnapshot.value
+
+publishTo := {
+  if (isSnapshot.value)
+    Some("Artifactory Realm" at "https://oss.jfrog.org/oss-snapshot-local/")
+  else
+    publishTo.value /* Value set by bintray-sbt plugin */
+}
+
+credentials := {
+  if (isSnapshot.value)
+    List(Path.userHome / ".bintray" / ".artifactory").filter(_.exists).map(Credentials(_))
+  else
+    credentials.value /* Value set by bintray-sbt plugin */
+}
