@@ -1,12 +1,12 @@
-package com.monsanto.labs.mwundo
+package com.monsanto.labs.mwundo.spray
 
+import com.monsanto.labs.mwundo.GeoJson
 import com.monsanto.labs.mwundo.GeoJson._
-import com.monsanto.labs.mwundo.GeoJsonFormats._
+import com.monsanto.labs.mwundo.spray.GeoJsonFormats._
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
+import spray.json._
 
 class GeoJsonFormatTest extends FunSpec with Matchers with ParallelTestExecution {
-
-  import spray.json._
 
   def marshalAndUnmarshal[T](t: T)(implicit jsonFormat: JsonFormat[T]) = {
     val json = t.toJson

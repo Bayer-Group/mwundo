@@ -1,7 +1,7 @@
-package com.monsanto.labs.mwundo
+package com.monsanto.labs.mwundo.spray
 
 import com.monsanto.labs.mwundo.GeoJson._
-import com.monsanto.labs.mwundo.GeoJsonFormats._
+import com.monsanto.labs.mwundo.spray.GeoJsonFormats._
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen._
 import org.scalacheck.Prop._

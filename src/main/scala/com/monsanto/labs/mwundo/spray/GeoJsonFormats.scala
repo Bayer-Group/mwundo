@@ -1,7 +1,7 @@
-package com.monsanto.labs.mwundo
+package com.monsanto.labs.mwundo.spray
 
 import com.monsanto.labs.mwundo.GeoJson._
-import spray.json.DefaultJsonProtocol
+import spray.json._
 
 /**
  * Spray json marshallers for GeoJSON spec: http://geojson.org/geojson-spec.html
@@ -9,7 +9,6 @@ import spray.json.DefaultJsonProtocol
 // scalastyle:off number.of.types
 // scalastyle:off number.of.methods
 object GeoJsonFormats extends DefaultJsonProtocol {
-  import spray.json._
 
   implicit object CoordinateFormat extends JsonFormat[Coordinate] {
     def write(obj: Coordinate): JsValue = JsArray(
