@@ -1,14 +1,13 @@
-package com.monsanto.labs.mwundo.spray
+package com.monsanto.labs.mwundo
 
-import com.monsanto.labs.mwundo.GeoJson
 import com.monsanto.labs.mwundo.GeoJson._
-import com.monsanto.labs.mwundo.spray.GeoJsonFormats._
+import com.monsanto.labs.mwundo.GeoJsonFormats._
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import spray.json._
 
 class GeoJsonFormatTest extends FunSpec with Matchers with ParallelTestExecution {
 
-  def marshalAndUnmarshal[T](t: T)(implicit jsonFormat: JsonFormat[T]) = {
+  private def marshalAndUnmarshal[T](t: T)(implicit jsonFormat: JsonFormat[T]) = {
     val json = t.toJson
     val result = json.convertTo[T]
 
@@ -18,7 +17,7 @@ class GeoJsonFormatTest extends FunSpec with Matchers with ParallelTestExecution
 
   case class MyProps(hi: String)
   object MyProps extends DefaultJsonProtocol {
-    implicit val pFmt = jsonFormat1(MyProps.apply)
+    implicit val pFmt: RootJsonFormat[MyProps] = jsonFormat1(MyProps.apply)
   }
 
   describe("GeoJson support") {

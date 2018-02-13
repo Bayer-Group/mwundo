@@ -1,18 +1,32 @@
 
-name := "mwundo"
-organization := "com.monsanto.labs"
+lazy val commonSettings = Seq(
+  organization := "com.monsanto.labs",
 
-bintrayOrganization := Some("monsanto")
+  licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause")),
 
-licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause"))
+  crossScalaVersions := Seq("2.12.4", "2.11.8"),
+  scalaVersion := crossScalaVersions.value.head,
+  releaseCrossBuild := true,
 
-crossScalaVersions := Seq("2.11.8", "2.12.4")
-scalaVersion := "2.12.4"
-releaseCrossBuild := true
+  scalacOptions ++= Seq(
+    "-feature",
+    "-deprecation",
+    "-unchecked",
+    "-Xcheckinit",
+    "-Xlint",
+    "-Xverify",
+    "-Yno-adapted-args",
+    "-encoding", "utf8") ++
+    scalacVersionOptions(scalaBinaryVersion.value),
 
-libraryDependencies ++= Dependencies.compile ++ Dependencies.test
+  testOptions in Test ++= Seq(
+    Tests.Argument(TestFrameworks.ScalaTest, "-oD"),
+    Tests.Argument(TestFrameworks.ScalaTest, "-u", (target.value / "test-reports").getPath),
+    Tests.Argument(TestFrameworks.ScalaTest, "-h", (target.value / "test-reports-html").getPath)
+  )
+) ++ PluginConfig.gitStampSettings ++ PluginConfig.buildPropertiesSettings ++ PluginConfig.bintraySettings
 
-val scalacVersionOptions: Map[String, Seq[String]] = Map(
+lazy val scalacVersionOptions: Map[String, Seq[String]] = Map(
   "2.11" -> Seq(
     "-Yclosure-elim",
     "-Yinline",
@@ -20,44 +34,22 @@ val scalacVersionOptions: Map[String, Seq[String]] = Map(
   "2.12" -> Seq.empty
 )
 
-scalacOptions ++= Seq(
-  "-feature",
-  "-deprecation",
-  "-unchecked",
-  "-Xcheckinit",
-  "-Xlint",
-  "-Xverify",
-  "-Yno-adapted-args",
-  "-encoding", "utf8") ++
-  scalacVersionOptions(scalaBinaryVersion.value)
+lazy val root = project.in(file("."))
+  .aggregate(`mwundo-core`, `mwundo-spray`)
+  .settings(commonSettings)
+  .settings(Seq(
+    packagedArtifacts := Map.empty
+  ))
 
+lazy val `mwundo-core` = project.in(file("core"))
+  .settings(commonSettings)
+  .settings(Seq(
+    libraryDependencies ++= Dependencies.core ++ Dependencies.test
+  ))
 
-testOptions in Test ++= Seq(
-  Tests.Argument(TestFrameworks.ScalaTest, "-oD"),
-  Tests.Argument(TestFrameworks.ScalaTest, "-u", (target.value / "test-reports").getPath),
-  Tests.Argument(TestFrameworks.ScalaTest, "-h", (target.value / "test-reports-html").getPath)
-)
-
-PluginConfig.settings
-
-// for bintray
-
-bintrayOrganization := Some("monsanto")
-
-licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause"))
-
-bintrayReleaseOnPublish := ! isSnapshot.value
-
-publishTo := {
-  if (isSnapshot.value)
-    Some("Artifactory Realm" at "https://oss.jfrog.org/oss-snapshot-local/")
-  else
-    publishTo.value /* Value set by bintray-sbt plugin */
-}
-
-credentials := {
-  if (isSnapshot.value)
-    List(Path.userHome / ".bintray" / ".artifactory").filter(_.exists).map(Credentials(_))
-  else
-    credentials.value /* Value set by bintray-sbt plugin */
-}
+lazy val `mwundo-spray` = project.in(file("spray"))
+  .dependsOn(`mwundo-core`)
+  .settings(commonSettings)
+  .settings(Seq(
+    libraryDependencies ++= Dependencies.spray ++ Dependencies.test
+  ))
