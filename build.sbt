@@ -34,7 +34,7 @@ lazy val scalacVersionOptions: Map[String, Seq[String]] = Map(
   "2.12" -> Seq.empty
 )
 
-lazy val root = project.in(file("."))
+lazy val mwundo = project.in(file("."))
   .aggregate(`mwundo-core`, `mwundo-spray`)
   .settings(commonSettings)
   .settings(Seq(
