@@ -1,17 +1,38 @@
-import sbt.Keys.{name, sbtVersion, scalaVersion, sourceGenerators, version, _}
+import bintray.BintrayPlugin.autoImport.{bintrayOrganization, bintrayReleaseOnPublish}
+import sbt.Keys.{name, sbtVersion, scalaVersion, version, _}
 import sbt.{Compile, SettingKey, _}
 
 object PluginConfig {
 
-  lazy val gitBranch = SettingKey[String]("gitBranch")
-  lazy val gitRevision = SettingKey[String]("gitRevision")
-  lazy val buildTimestamp = SettingKey[String]("buildTimestamp")
+  private lazy val gitBranch = SettingKey[String]("gitBranch")
+  private lazy val gitRevision = SettingKey[String]("gitRevision")
+  private lazy val buildTimestamp = SettingKey[String]("buildTimestamp")
 
-  lazy val settings =
-    gitStampSettings ++
-    buildPropertiesSettings
+  lazy val bintraySettings = Seq(
+    // for bintray
 
-  private lazy val gitStampSettings = {
+    bintrayOrganization := Some("monsanto"),
+
+    licenses += ("BSD", url("http://opensource.org/licenses/BSD-3-Clause")),
+
+    bintrayReleaseOnPublish := !isSnapshot.value,
+
+    publishTo := {
+      if (isSnapshot.value)
+        Some("Artifactory Realm" at "https://oss.jfrog.org/oss-snapshot-local/")
+      else
+        publishTo.value /* Value set by bintray-sbt plugin */
+    },
+
+    credentials := {
+      if (isSnapshot.value)
+        List(Path.userHome / ".bintray" / ".artifactory").filter(_.exists).map(Credentials(_))
+      else
+        credentials.value /* Value set by bintray-sbt plugin */
+    }
+  )
+
+  lazy val gitStampSettings = {
     import com.atlassian.labs.gitstamp.GitStampPlugin
 
     GitStampPlugin.gitStampSettings ++ Seq(
@@ -21,7 +42,7 @@ object PluginConfig {
     )
   }
 
-  private lazy val buildPropertiesSettings =
+  lazy val buildPropertiesSettings =
     resourceGenerators in Compile <+=
       (resourceManaged in Compile, name, version, scalaVersion, sbtVersion, gitBranch, gitRevision, buildTimestamp) map {
         (dir, name, version, scalaVersion, sbtVersion, gitBranch, gitRevision, buildTimestamp) =>

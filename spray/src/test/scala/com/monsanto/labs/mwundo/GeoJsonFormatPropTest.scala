@@ -12,7 +12,7 @@ import spray.json._
 
 class GeoJsonFormatPropTest extends FunSpec with Checkers with ParallelTestExecution {
 
-  implicit override val generatorDrivenConfig = PropertyCheckConfiguration(workers = 4)
+  implicit override val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(workers = 4)
   import GeoJsonGenerators._
 
   private def marshalAndUnmarshal[T](t: T)(implicit jf: JsonFormat[T]) = {
