@@ -38,7 +38,9 @@ lazy val mwundo = project.in(file("."))
   .aggregate(`mwundo-core`, `mwundo-spray`)
   .settings(commonSettings)
   .settings(Seq(
-    packagedArtifacts := Map.empty
+    packagedArtifacts := Map.empty,
+    publishArtifact := false,
+    publish := {}
   ))
 
 lazy val `mwundo-core` = project.in(file("core"))
