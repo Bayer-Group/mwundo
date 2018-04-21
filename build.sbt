@@ -35,7 +35,7 @@ lazy val scalacVersionOptions: Map[String, Seq[String]] = Map(
 )
 
 lazy val mwundo = project.in(file("."))
-  .aggregate(`mwundo-core`, `mwundo-spray`)
+  .aggregate(`mwundo-core`, `mwundo-spray`, `mwundo-circe`)
   .settings(commonSettings)
   .settings(Seq(
     packagedArtifacts := Map.empty,
@@ -54,4 +54,11 @@ lazy val `mwundo-spray` = project.in(file("spray"))
   .settings(commonSettings)
   .settings(Seq(
     libraryDependencies ++= Dependencies.spray ++ Dependencies.test
+  ))
+
+lazy val `mwundo-circe` = project.in(file("circe"))
+  .dependsOn(`mwundo-core`)
+  .settings(commonSettings)
+  .settings(Seq(
+    libraryDependencies ++= Dependencies.circe ++ Dependencies.test
   ))
