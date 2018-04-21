@@ -12,7 +12,7 @@ object GeoJsonCodec  {
   import io.circe.syntax._
   import io.circe.Decoder.Result
 
-  import com.monsanto.labs.mwundo.GeoJson.{Geometry, _}
+  import com.monsanto.labs.mwundo.GeoJson._
 
   implicit val coordinateEncoder: Encoder[GeoJson.Coordinate] = deriveEncoder[GeoJson.Coordinate]
   implicit val coordinateDecoder: Decoder[GeoJson.Coordinate] = deriveDecoder[GeoJson.Coordinate]
