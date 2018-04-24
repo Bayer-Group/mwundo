@@ -56,8 +56,8 @@ object GeoJsonCodec  {
   implicit def toFeatureEncoder[G <: Geometry, P](implicit propertiesEncoder: Encoder[P], geometryEncoder:Encoder[G]): Encoder[Feature[G, P]] =
     new Encoder[Feature[G, P]] {
       override def apply(feature: Feature[G, P]): Json =
-        Json.obj( ("geometry", geometryEncoder(feature.geometry).asJson),
-                  ("properties", propertiesEncoder(feature.properties).asJson),
+        Json.obj( ("geometry", feature.geometry.asJson),
+                  ("properties", feature.properties.asJson),
                   ("id", feature.id.asJson) )
     }
 
@@ -65,8 +65,8 @@ object GeoJsonCodec  {
     new Decoder[Feature[G, P]] {
       override def apply(c: HCursor): Result[Feature[G, P]] =
         for {
-          geometry <- c.downField("geometry").as[G](geometryDecoder)
-          properties <- c.downField("properties").as[P](propertiesDecoder)
+          geometry <- c.downField("geometry").as[G]
+          properties <- c.downField("properties").as[P]
           id <- c.downField("id").as[Option[String]]
         } yield {
           Feature(geometry, properties, id)
