@@ -2,8 +2,9 @@ package com.monsanto.labs.mwundo
 
 import com.monsanto.labs.mwundo.GeoJson._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, Json}
 import io.circe.syntax._
+import io.circe.parser._
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class GeoJsonCodecTest extends FunSpec with Matchers with ParallelTestExecution {
@@ -18,19 +19,153 @@ class GeoJsonCodecTest extends FunSpec with Matchers with ParallelTestExecution 
     result.toTry.get.asJson.toString() should be (json.toString())
   }
 
+  private def extractGeometryTypeString(json: Json) =
+    json.asObject.get.apply("type").get.as[String].toOption.get
+
   case class MyProps(hi: String)
   object MyProps {
     implicit val encoder: Encoder[MyProps] = deriveEncoder[MyProps]
     implicit val decoder: Decoder[MyProps] = deriveDecoder[MyProps]
   }
 
+  describe(" GeoJson `type` information") {
+    it("should carry the geometry type in the json for a Point") {
+      val point = Point(Coordinate(0.1, 2.0))
+
+      val json = point.asJson
+
+      extractGeometryTypeString(json) should be(point.`type`)
+    }
+
+    it("should carry the geometry type in the json for a MultiPoint") {
+      val multiPoint = MultiPoint(Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)))
+
+      val json = multiPoint.asJson
+
+      extractGeometryTypeString(json) should be(multiPoint.`type`)
+    }
+
+    it("should carry the geometry type in the json for a LineString") {
+      val lineString = LineString(Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)))
+
+      val json = lineString.asJson
+
+      extractGeometryTypeString(json) should be(lineString.`type`)
+    }
+
+    it("should carry the geometry type in the json for a MultiLineString") {
+      val multiLineString = MultiLineString(Seq(
+        Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+        Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1))
+      ))
+
+      val json = multiLineString.asJson
+
+      extractGeometryTypeString(json) should be(multiLineString.`type`)
+    }
+
+    it("should carry the geometry type in the json for a Polygon") {
+      val polygon = Polygon(Seq(
+        Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+        Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1))
+      ))
+
+      val json = polygon.asJson
+
+      extractGeometryTypeString(json) should be(polygon.`type`)
+    }
+
+    it("should carry the geometry type in the json for a MultiPolygon") {
+      val multiPolygon = MultiPolygon(Seq(
+        Seq(
+          Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+          Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1))),
+        Seq(
+          Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+          Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)))
+      ))
+
+      val json = multiPolygon.asJson
+
+      extractGeometryTypeString(json) should be(multiPolygon.`type`)
+    }
+
+    it("should carry the geometry type in the json for a GeometryCollection") {
+      val mulitPolygonCollection = GeometryCollection(Seq(
+        MultiPolygon(Seq(
+          Seq(
+            Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+            Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1))),
+          Seq(
+            Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+            Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)))
+        )),
+        MultiPolygon(Seq(
+          Seq(
+            Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+            Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1))),
+          Seq(
+            Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+            Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)))
+        ))
+      ))
+
+      val json = mulitPolygonCollection.asJson
+
+      extractGeometryTypeString(json) should be(mulitPolygonCollection.`type`)
+    }
+  }
+
   describe("GeoJson support"){
+
+    it("should convert a Coordinate to an array") {
+      val coordinate = Coordinate(0.1, 2.0)
+
+      val coordinateJson = coordinate.asJson
+
+      coordinateJson.isArray should be (true)
+      coordinateJson.noSpaces should be ("[0.1,2.0]")
+    }
+
+    it("should convert a JSON Array of size two to a Coordinate") {
+      val jsonArrayAsString = "[0.1,2.0]"
+
+      val jsonArray = parse(jsonArrayAsString).right.get
+      val coordinate = jsonArray.as[Coordinate].toTry.get
+
+      coordinate should be (Coordinate(0.1, 2.0))
+    }
+
+    it("should NOT convert a JSON Array of size 0 to a Coordinate") {
+      val jsonArrayAsString = "[]"
+
+      val jsonArray = parse(jsonArrayAsString).right.get
+
+      jsonArray.as[Coordinate].toTry.isFailure should be (true)
+    }
+
+    it("should NOT convert a JSON Array of size 1 to a Coordinate") {
+      val jsonArrayAsString = "[0.1]"
+
+      val jsonArray = parse(jsonArrayAsString).right.get
+
+      jsonArray.as[Coordinate].toTry.isFailure should be (true)
+    }
+
+    it("should NOT convert a JSON Array of size greater than 2 to a Coordinate") {
+      val jsonArrayAsString = "[0.1,0.1,0.1]"
+
+      val jsonArray = parse(jsonArrayAsString).right.get
+
+      jsonArray.as[Coordinate].toTry.isFailure should be (true)
+    }
 
     it("should marshal and unmarshal Coordinate") {
       val coordinate = Coordinate(0.1, 2.0)
 
       marshalAndUnmarshal(coordinate)
     }
+
 
     it("should marshal and unmarshal Point") {
       val point = Point(Coordinate(0.1, 2.0))

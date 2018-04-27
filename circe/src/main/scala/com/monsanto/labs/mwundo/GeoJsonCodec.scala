@@ -10,84 +10,94 @@ object GeoJsonCodec  {
   import io.circe._
   import io.circe.generic.semiauto._
   import io.circe.syntax._
-  import io.circe.Decoder.Result
 
   import com.monsanto.labs.mwundo.GeoJson._
 
-  implicit val coordinateEncoder: Encoder[GeoJson.Coordinate] = deriveEncoder[GeoJson.Coordinate]
-  implicit val coordinateDecoder: Decoder[GeoJson.Coordinate] = deriveDecoder[GeoJson.Coordinate]
+  implicit val coordinateEncoder: Encoder[GeoJson.Coordinate] = Encoder.instance {  coordinate =>
+    Array[BigDecimal](coordinate.x, coordinate.y).asJson
+  }
 
-  implicit val pointEncoder: Encoder[GeoJson.Point] = deriveEncoder[GeoJson.Point]
-  implicit val pointDecoder: Decoder[GeoJson.Point] = deriveDecoder[GeoJson.Point]
+  implicit val coordinateDecoder: Decoder[GeoJson.Coordinate] = Decoder.instance { cursor =>
+    cursor.as[Array[BigDecimal]] match {
+      case Right(coords) if coords.length == 2 => Right(Coordinate(coords(0), coords(1)))
+      case _ => Left(DecodingFailure("Decoding error.  Coordinates must be an 'x' and a 'y' in array form.", cursor.history))
+    }
+  }
 
-  implicit val multiPointEncoder: Encoder[GeoJson.MultiPoint] = deriveEncoder[GeoJson.MultiPoint]
+
+  private def encoder[A, G <: GeoJson.Geometry with Coords[A]](geometry: GeoJson.Geometry with Coords[A])(implicit coordinateEncoder: Encoder[A]): Json =
+    Json.obj(
+      ("type", geometry.`type`.asJson),
+      ("coordinates", geometry.coordinates.asJson) )
+
+  implicit val pointEncoder: Encoder[GeoJson.Point] = Encoder.instance[GeoJson.Point] { point: Point => encoder(point) }
+  implicit val pointDecoder: Decoder[Point] = deriveDecoder[Point]
+
+  implicit val multiPointEncoder: Encoder[GeoJson.MultiPoint] = Encoder.instance[GeoJson.MultiPoint] { multiPoint: MultiPoint => encoder(multiPoint) }
   implicit val multiPointDecoder: Decoder[GeoJson.MultiPoint] = deriveDecoder[GeoJson.MultiPoint]
 
-  implicit val lineStringEncoder: Encoder[GeoJson.LineString] = deriveEncoder[GeoJson.LineString]
+  implicit val lineStringEncoder: Encoder[GeoJson.LineString] = Encoder.instance[GeoJson.LineString] { lineString: LineString => encoder(lineString) }
   implicit val lineStringDecoder: Decoder[GeoJson.LineString] = deriveDecoder[GeoJson.LineString]
 
-  implicit val multiLineStringEncoder: Encoder[GeoJson.MultiLineString] = deriveEncoder[GeoJson.MultiLineString]
+  implicit val multiLineStringEncoder: Encoder[GeoJson.MultiLineString] = Encoder.instance[GeoJson.MultiLineString] { multiLineString: MultiLineString => encoder(multiLineString) }
   implicit val multiLineStringDecoder: Decoder[GeoJson.MultiLineString] = deriveDecoder[GeoJson.MultiLineString]
 
-  implicit val polygonEncoder: Encoder[GeoJson.Polygon] = deriveEncoder[GeoJson.Polygon]
+  implicit val polygonEncoder: Encoder[GeoJson.Polygon] = Encoder.instance[GeoJson.Polygon] { polygon: Polygon => encoder(polygon) }
   implicit val polygonDecoder: Decoder[GeoJson.Polygon] = deriveDecoder[GeoJson.Polygon]
 
-  implicit val multiPolygonEncoder: Encoder[GeoJson.MultiPolygon] = deriveEncoder[GeoJson.MultiPolygon]
+  implicit val multiPolygonEncoder: Encoder[GeoJson.MultiPolygon] = Encoder.instance[GeoJson.MultiPolygon] { multiPolygon: MultiPolygon => encoder(multiPolygon) }
   implicit val multiPolygonDecoder: Decoder[GeoJson.MultiPolygon] = deriveDecoder[GeoJson.MultiPolygon]
 
-
-  implicit def toGeometryCollectionEncoder[G <: Geometry](implicit geometryEncoder:Encoder[G]): Encoder[GeometryCollection[G]] =
-    new Encoder[GeometryCollection[G]] {
-      override def apply(a: GeometryCollection[G]): Json =
-        Json.obj( ("type", a.`type`.asJson),
-                  ("geometries", a.geometries.asJson) )
+  implicit def toGeometryCollectionEncoder[G <: GeoJson.Geometry](implicit geometryEncoder:Encoder[G]): Encoder[GeoJson.GeometryCollection[G]] =
+    Encoder.instance[GeometryCollection[G]] { geometryCollection: GeometryCollection[G] =>
+      Json.obj(
+        ("type", geometryCollection.`type`.asJson),
+        ("geometries", geometryCollection.geometries.asJson) )
     }
 
-  implicit def toGeometryCollectionDecoder[G <: Geometry](implicit geometryDecoder: Decoder[G]): Decoder[GeometryCollection[G]] =
-    new Decoder[GeometryCollection[G]] {
-      override def apply(c: HCursor): Result[GeometryCollection[G]] =
-        for {
-          geometries <- c.downField("geometries").as[Seq[G]]
-        } yield {
-          GeometryCollection(geometries)
-        }
+  implicit def toGeometryCollectionDecoder[G <: GeoJson.Geometry](implicit geometryDecoder: Decoder[G]): Decoder[GeoJson.GeometryCollection[G]] =
+    Decoder.instance[GeometryCollection[G]] { cursor: HCursor =>
+      for {
+        geometries <- cursor.downField("geometries").as[Seq[G]]
+      } yield {
+        GeometryCollection(geometries)
+      }
     }
 
-  implicit def toFeatureEncoder[G <: Geometry, P](implicit propertiesEncoder: Encoder[P], geometryEncoder:Encoder[G]): Encoder[Feature[G, P]] =
-    new Encoder[Feature[G, P]] {
-      override def apply(feature: Feature[G, P]): Json =
-        Json.obj( ("geometry", feature.geometry.asJson),
-                  ("properties", feature.properties.asJson),
-                  ("id", feature.id.asJson) )
+  implicit def toFeatureEncoder[G <: GeoJson.Geometry, P](implicit propertiesEncoder: Encoder[P], geometryEncoder:Encoder[G]): Encoder[GeoJson.Feature[G, P]] =
+    Encoder.instance[Feature[G, P]] { feature: Feature[G, P] =>
+      Json.obj(
+        ("geometry", feature.geometry.asJson),
+        ("properties", feature.properties.asJson),
+        ("id", feature.id.asJson) )
     }
 
-  implicit def toFeatureDecoder[G <: Geometry, P](implicit propertiesDecoder: Decoder[P], geometryDecoder:Decoder[G]): Decoder[Feature[G, P]] =
-    new Decoder[Feature[G, P]] {
-      override def apply(c: HCursor): Result[Feature[G, P]] =
-        for {
-          geometry <- c.downField("geometry").as[G]
-          properties <- c.downField("properties").as[P]
-          id <- c.downField("id").as[Option[String]]
-        } yield {
-          Feature(geometry, properties, id)
-        }
+  implicit def toFeatureDecoder[G <: GeoJson.Geometry, P](implicit propertiesDecoder: Decoder[P], geometryDecoder:Decoder[G]): Decoder[GeoJson.Feature[G, P]] =
+    Decoder.instance[Feature[G, P]] { cursor: HCursor =>
+      for {
+        geometry <- cursor.downField("geometry").as[G]
+        properties <- cursor.downField("properties").as[P]
+        id <- cursor.downField("id").as[Option[String]]
+      } yield {
+        Feature(geometry, properties, id)
+      }
     }
 
-  implicit def toFeatureCollectionEncoder[G <: Geometry, P](implicit propertiesDecoder: Encoder[P], geometryEncoder:Encoder[G]): Encoder[FeatureCollection[G, P]] =
-    new Encoder[FeatureCollection[G, P]] {
-      override def apply(a: FeatureCollection[G, P]): Json =
-        Json.obj( ("type", a.`type`.asJson),
-                  ("features", a.features.asJson) )
+  implicit def toFeatureCollectionEncoder[G <: GeoJson.Geometry, P](implicit propertiesEncoder: Encoder[P], geometryEncoder:Encoder[G]): Encoder[GeoJson.FeatureCollection[G, P]] =
+    Encoder.instance[FeatureCollection[G, P]] { feature: FeatureCollection[G, P] =>
+      Json.obj(
+        ("type", feature.`type`.asJson),
+        ("features", feature.features.asJson) )
     }
 
-  implicit def toFeatureCollectionDecoder[G <: Geometry, P](implicit propertiesDecoder: Decoder[P], geometryDecoder:Decoder[G]): Decoder[FeatureCollection[G, P]] =
-    new Decoder[FeatureCollection[G, P]] {
-      override def apply(c: HCursor): Result[FeatureCollection[G, P]] =
-        for {
-          features <- c.downField("features").as[Seq[Feature[G, P]]]
-        } yield {
-          FeatureCollection(features)
-        }
+
+  implicit def toFeatureCollectionDecoder[G <: GeoJson.Geometry, P](implicit propertiesDecoder: Decoder[P], geometryDecoder:Decoder[G]): Decoder[GeoJson.FeatureCollection[G, P]] =
+    Decoder.instance[FeatureCollection[G, P]] { cursor: HCursor =>
+      for {
+        features <- cursor.downField("features").as[Seq[Feature[G, P]]]
+      } yield {
+        FeatureCollection(features)
+      }
     }
 
 }
