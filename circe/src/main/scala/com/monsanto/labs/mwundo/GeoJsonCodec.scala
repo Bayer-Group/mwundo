@@ -57,6 +57,8 @@ object GeoJsonCodec  {
 
   implicit def toGeometryCollectionDecoder[G <: GeoJson.Geometry](implicit geometryDecoder: Decoder[G]): Decoder[GeoJson.GeometryCollection[G]] =
     Decoder.instance[GeometryCollection[G]] { cursor: HCursor =>
+      import cats.syntax.either._
+
       for {
         geometries <- cursor.downField("geometries").as[Seq[G]]
       } yield {
@@ -74,6 +76,8 @@ object GeoJsonCodec  {
 
   implicit def toFeatureDecoder[G <: GeoJson.Geometry, P](implicit propertiesDecoder: Decoder[P], geometryDecoder:Decoder[G]): Decoder[GeoJson.Feature[G, P]] =
     Decoder.instance[Feature[G, P]] { cursor: HCursor =>
+      import cats.syntax.either._
+
       for {
         geometry <- cursor.downField("geometry").as[G]
         properties <- cursor.downField("properties").as[P]
@@ -93,6 +97,8 @@ object GeoJsonCodec  {
 
   implicit def toFeatureCollectionDecoder[G <: GeoJson.Geometry, P](implicit propertiesDecoder: Decoder[P], geometryDecoder:Decoder[G]): Decoder[GeoJson.FeatureCollection[G, P]] =
     Decoder.instance[FeatureCollection[G, P]] { cursor: HCursor =>
+      import cats.syntax.either._
+
       for {
         features <- cursor.downField("features").as[Seq[Feature[G, P]]]
       } yield {
