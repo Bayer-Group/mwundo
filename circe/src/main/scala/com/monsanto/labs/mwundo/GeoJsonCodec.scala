@@ -1,11 +1,13 @@
 package com.monsanto.labs.mwundo
 
+import io.circe.CursorOp.DownField
+
 /**
   * Circe json marshallers for GeoJSON spec: http://geojson.org/geojson-spec.html
   */
 // scalastyle:off number.of.types
 // scalastyle:off number.of.methods
-object GeoJsonCodec  {
+object GeoJsonCodec {
 
   import io.circe._
   import io.circe.generic.semiauto._
@@ -13,7 +15,7 @@ object GeoJsonCodec  {
 
   import com.monsanto.labs.mwundo.GeoJson._
 
-  implicit val coordinateEncoder: Encoder[GeoJson.Coordinate] = Encoder.instance {  coordinate =>
+  implicit val coordinateEncoder: Encoder[GeoJson.Coordinate] = Encoder.instance { coordinate =>
     Array[BigDecimal](coordinate.x, coordinate.y).asJson
   }
 
@@ -28,7 +30,7 @@ object GeoJsonCodec  {
   private def encoder[A, G <: GeoJson.Geometry with Coords[A]](geometry: GeoJson.Geometry with Coords[A])(implicit coordinateEncoder: Encoder[A]): Json =
     Json.obj(
       ("type", geometry.`type`.asJson),
-      ("coordinates", geometry.coordinates.asJson) )
+      ("coordinates", geometry.coordinates.asJson))
 
   implicit val pointEncoder: Encoder[GeoJson.Point] = Encoder.instance[GeoJson.Point] { point: Point => encoder(point) }
   implicit val pointDecoder: Decoder[Point] = deriveDecoder[Point]
@@ -48,11 +50,11 @@ object GeoJsonCodec  {
   implicit val multiPolygonEncoder: Encoder[GeoJson.MultiPolygon] = Encoder.instance[GeoJson.MultiPolygon] { multiPolygon: MultiPolygon => encoder(multiPolygon) }
   implicit val multiPolygonDecoder: Decoder[GeoJson.MultiPolygon] = deriveDecoder[GeoJson.MultiPolygon]
 
-  implicit def toGeometryCollectionEncoder[G <: GeoJson.Geometry](implicit geometryEncoder:Encoder[G]): Encoder[GeoJson.GeometryCollection[G]] =
+  implicit def toGeometryCollectionEncoder[G <: GeoJson.Geometry](implicit geometryEncoder: Encoder[G]): Encoder[GeoJson.GeometryCollection[G]] =
     Encoder.instance[GeometryCollection[G]] { geometryCollection: GeometryCollection[G] =>
       Json.obj(
         ("type", geometryCollection.`type`.asJson),
-        ("geometries", geometryCollection.geometries.asJson) )
+        ("geometries", geometryCollection.geometries.asJson))
     }
 
   implicit def toGeometryCollectionDecoder[G <: GeoJson.Geometry](implicit geometryDecoder: Decoder[G]): Decoder[GeoJson.GeometryCollection[G]] =
@@ -66,20 +68,29 @@ object GeoJsonCodec  {
       }
     }
 
-  implicit def toFeatureEncoder[G <: GeoJson.Geometry, P](implicit propertiesEncoder: Encoder[P], geometryEncoder:Encoder[G]): Encoder[GeoJson.Feature[G, P]] =
+  implicit def toFeatureEncoder[G <: GeoJson.Geometry, P](implicit propertiesEncoder: Encoder[P], geometryEncoder: Encoder[G]): Encoder[GeoJson.Feature[G, P]] =
     Encoder.instance[Feature[G, P]] { feature: Feature[G, P] =>
       Json.obj(
         ("geometry", feature.geometry.asJson),
+        ("type", feature.`type`.asJson),
         ("properties", feature.properties.asJson),
-        ("id", feature.id.asJson) )
+        ("id", feature.id.asJson))
     }
 
-  implicit def toFeatureDecoder[G <: GeoJson.Geometry, P](implicit propertiesDecoder: Decoder[P], geometryDecoder:Decoder[G]): Decoder[GeoJson.Feature[G, P]] =
+  private def featureType(c:HCursor) :Either[DecodingFailure,String] = {
+    import cats.syntax.either._
+    c.downField("type").as[String].flatMap{ x:String=>
+      if (x.contains("Feature")) Right(x)
+      else Left(DecodingFailure("invalid type " +x +" expected some kind of Feature",List(DownField("type"))))
+    }
+  }
+
+  implicit def toFeatureDecoder[G <: GeoJson.Geometry, P](implicit propertiesDecoder: Decoder[P], geometryDecoder: Decoder[G]): Decoder[GeoJson.Feature[G, P]] =
     Decoder.instance[Feature[G, P]] { cursor: HCursor =>
       import cats.syntax.either._
-
       for {
         geometry <- cursor.downField("geometry").as[G]
+        t <- featureType(cursor)
         properties <- cursor.downField("properties").as[P]
         id <- cursor.downField("id").as[Option[String]]
       } yield {
