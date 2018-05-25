@@ -77,7 +77,7 @@ object GeoJsonCodec {
         ("id", feature.id.asJson))
     }
 
-  def featureType(c:HCursor) :Either[DecodingFailure,String] = {
+  private def featureType(c:HCursor) :Either[DecodingFailure,String] = {
     import cats.syntax.either._
     c.downField("type").as[String].flatMap{ x:String=>
       if (x.contains("Feature")) Right(x)
