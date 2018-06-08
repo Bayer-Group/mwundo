@@ -1,4 +1,7 @@
 
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+
+
 lazy val commonSettings = Seq(
   organization := "com.monsanto.labs",
 
@@ -34,8 +37,11 @@ lazy val scalacVersionOptions: Map[String, Seq[String]] = Map(
   "2.12" -> Seq.empty
 )
 
+lazy val breeze = "0.13"
+lazy val circe = "0.9.3"
+
 lazy val mwundo = project.in(file("."))
-  .aggregate(`mwundo-core`, `mwundo-spray`, `mwundo-circe`)
+  .aggregate(`mwundo-coreJVM`,`mwundo-coreJS`,`mwundo-spray`, `mwundo-circeJVM`,`mwundo-circeJS`)
   .settings(commonSettings)
   .settings(Seq(
     packagedArtifacts := Map.empty,
@@ -43,22 +49,56 @@ lazy val mwundo = project.in(file("."))
     publish := {}
   ))
 
-lazy val `mwundo-core` = project.in(file("core"))
+lazy val `mwundo-core` = crossProject(JSPlatform, JVMPlatform).in(file("core"))
+ // .crossType(CrossType.Pure)
   .settings(commonSettings)
   .settings(Seq(
-    libraryDependencies ++= Dependencies.core ++ Dependencies.test
-  ))
+    libraryDependencies ++= Seq(
+      "org.scalatest"           %% "scalatest"                    % "3.0.1" % "test",
+      "org.scalacheck"          %% "scalacheck"                   % "1.13.4" % "test",
+      "org.scalamock"           %% "scalamock-scalatest-support"  % "3.5.0" % "test",
+      "org.pegdown"             %  "pegdown"                      % "1.4.2" % "test"
+    )
+  )).jvmSettings(Seq(
+  libraryDependencies ++= Seq(
+    "org.scalanlp"       %%% "breeze"         % breeze,
+  "org.scalanlp"       %%% "breeze-natives" % breeze,
+  "com.vividsolutions" %  "jts-core"       % "1.14.0")))
+
+lazy val `mwundo-coreJVM`= `mwundo-core`.jvm
+lazy val `mwundo-coreJS`= `mwundo-core`.js
 
 lazy val `mwundo-spray` = project.in(file("spray"))
-  .dependsOn(`mwundo-core`)
+  .dependsOn(`mwundo-coreJVM`)
   .settings(commonSettings)
   .settings(Seq(
-    libraryDependencies ++= Dependencies.spray ++ Dependencies.test
+    libraryDependencies ++= Seq(
+      "io.spray" %% "spray-json" % "1.3.2",
+      "org.scalatest"           %% "scalatest"                    % "3.0.1" % "test",
+      "org.scalacheck"          %% "scalacheck"                   % "1.13.4" % "test",
+      "org.scalamock"           %% "scalamock-scalatest-support"  % "3.5.0" % "test",
+      "org.pegdown"             %  "pegdown"                      % "1.4.2" % "test"
+    )
   ))
 
-lazy val `mwundo-circe` = project.in(file("circe"))
+
+lazy val `mwundo-circe` = crossProject(JSPlatform, JVMPlatform)
+  .in(file("circe"))
+ // .crossType(CrossType.Pure)
   .dependsOn(`mwundo-core`)
   .settings(commonSettings)
   .settings(Seq(
-    libraryDependencies ++= Dependencies.circe ++ Dependencies.test
-  ))
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-core" % circe,
+      "io.circe" %%% "circe-generic" % circe,
+      "io.circe" %%% "circe-parser" % circe,
+      "org.scalatest"           %% "scalatest"                    % "3.0.1" % "test",
+      "org.scalacheck"          %% "scalacheck"                   % "1.13.4" % "test",
+      "org.scalamock"           %% "scalamock-scalatest-support"  % "3.5.0" % "test",
+      "org.pegdown"             %  "pegdown"                      % "1.4.2" % "test"
+    )
+  )
+  )
+
+lazy val `mwundo-circeJVM`= `mwundo-circe`.jvm
+lazy val `mwundo-circeJS`= `mwundo-circe`.js

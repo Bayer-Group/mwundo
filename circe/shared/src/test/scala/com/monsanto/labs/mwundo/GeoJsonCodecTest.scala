@@ -115,6 +115,22 @@ class GeoJsonCodecTest extends FunSpec with Matchers with ParallelTestExecution 
 
       extractGeometryTypeString(json) should be(mulitPolygonCollection.`type`)
     }
+
+    it("does something") {
+      val shape1json =
+        """
+          |{ "type": "Feature", "properties": { "id": "1234" }, "geometry": { "type": "Polygon", "coordinates":
+          |[ [ [ 127.083301191389481, 56.37455697640776 ], [ 127.083301191389481, 56.444169331058909 ],
+          |[ 127.122110418348996, 56.443626544667872 ], [ 127.123603080924354, 56.479179053281129 ],
+          |[ 127.165126239839083, 56.479043356683363 ],
+          |[ 127.161733824895066, 56.403053261937472 ], [ 127.138122616884729, 56.401153509568822],
+          |[ 127.137172740700407, 56.376185335580885 ], [ 127.083301191389481, 56.37455697640776 ] ] ] } }
+        """.stripMargin
+
+      val json = io.circe.parser.parse(shape1json).right.get
+      val f = json.as[Feature[Polygon,Map[String,String]]]
+    assert(f.isRight)
+    }
   }
 
   describe("GeoJson support"){
