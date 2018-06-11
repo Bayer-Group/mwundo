@@ -61,9 +61,9 @@ lazy val `mwundo-core` = crossProject(JSPlatform, JVMPlatform).in(file("core"))
     )
   )).jvmSettings(Seq(
   libraryDependencies ++= Seq(
-    "org.scalanlp"       %%% "breeze"         % breeze,
-  "org.scalanlp"       %%% "breeze-natives" % breeze,
-  "com.vividsolutions" %  "jts-core"       % "1.14.0")))
+    "org.scalanlp"       %% "breeze"         % breeze,
+    "org.scalanlp"       %% "breeze-natives" % breeze,
+    "com.vividsolutions" %  "jts-core"       % "1.14.0")))
 
 lazy val `mwundo-coreJVM`= `mwundo-core`.jvm
 lazy val `mwundo-coreJS`= `mwundo-core`.js
