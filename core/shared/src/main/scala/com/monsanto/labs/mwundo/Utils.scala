@@ -1,10 +1,5 @@
 package com.monsanto.labs.mwundo
 
-
-
-/**
- * Created by Ryan Richt on 10/26/15
- */
 object Utils {
 
   private val meanRadiusOfEarthKm = 6371.0
