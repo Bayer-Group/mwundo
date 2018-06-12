@@ -4,12 +4,11 @@ import java.awt.geom.Point2D
 
 import com.vividsolutions.jts.awt.PolygonShape
 
-/**
-  * Created by Ryan Richt on 10/26/15
-  */
+
 trait Java2Dable[G] {
   def toJava2D(g: G): Seq[java.awt.Shape]
 }
+
 object Java2Dable {
 
   private val addToRing = classOf[PolygonShape].getDeclaredMethod("addToRing", classOf[Point2D])
