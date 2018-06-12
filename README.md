@@ -22,6 +22,8 @@ You may also need to add:
 
 `resolvers += Resolver.bintrayRepo("monsanto", "maven")`
 
+Since version 0.4.0, the library is also compiled for Scala.js.  As with other Scala.js dependencies, you would use `%%%` instead of `%%`.
+
 ## About
 "mwundo" is Swahili for "shape," plus its fun to say.
 
