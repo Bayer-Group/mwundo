@@ -8,7 +8,7 @@ object Utils {
     latLongRectangleArea(-90D,-180D,90D,180D,r)
   }
 
-  def latLongRectangleArea(lat1: Double, long1: Double, lat2: Double, long2: Double, r: Double = meanRadiusOfEarthKm) =
+  def latLongRectangleArea(lat1: Double, long1: Double, lat2: Double, long2: Double, r: Double = meanRadiusOfEarthKm) :Double =
     Math.pow(r, 2.0) *
     Math.abs(
       Math.sin(Math.toRadians(lat1)) - Math.sin( Math.toRadians(lat2))
@@ -17,7 +17,7 @@ object Utils {
       Math.toRadians(long1) - Math.toRadians(long2)
     )
 
-  def haversineDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double, r: Double = meanRadiusOfEarthKm) = {
+  def haversineDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double, r: Double = meanRadiusOfEarthKm) :Double = {
     val dLat = Math.toRadians(lat2 - lat1)
     val dLon = Math.toRadians(lng2 - lng1)
     val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
