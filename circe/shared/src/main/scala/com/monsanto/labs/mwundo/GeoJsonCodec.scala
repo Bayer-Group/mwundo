@@ -50,6 +50,28 @@ object GeoJsonCodec {
   implicit val multiPolygonEncoder: Encoder[GeoJson.MultiPolygon] = Encoder.instance[GeoJson.MultiPolygon] { multiPolygon: MultiPolygon => encoder(multiPolygon) }
   implicit val multiPolygonDecoder: Decoder[GeoJson.MultiPolygon] = deriveDecoder[GeoJson.MultiPolygon]
 
+  implicit val toGeometryEncoder: Encoder[GeoJson.Geometry] = Encoder.instance[GeoJson.Geometry] {
+    case geom: Point => encoder(geom)
+    case geom: MultiPoint => encoder(geom)
+    case geom: LineString => encoder(geom)
+    case geom: MultiLineString => encoder(geom)
+    case geom: Polygon => encoder(geom)
+    case geom: MultiPolygon => encoder(geom)
+    case unknown => throw new RuntimeException(s"Unhandled geometry type '$unknown'")
+  }
+
+  implicit val toGeometryDecoder: Decoder[GeoJson.Geometry] = Decoder.instance[Geometry]{ cursor =>
+    cursor.downField("type").as[String].toTry.map{
+      case "Polygon" => cursor.as[GeoJson.Polygon]
+      case "MultiPolygon" => cursor.as[MultiPolygon]
+      case "Point" => cursor.as[Point]
+      case "MultiPoint" => cursor.as[MultiPoint]
+      case "LineString" => cursor.as[LineString]
+      case "MultiLineString" => cursor.as[MultiLineString]
+      case unknown => throw new RuntimeException(s"Unhandled geometry type '$unknown'")
+    }.getOrElse(throw new RuntimeException(s"Geometry has no type key, keys: ${cursor.keys}"))
+  }
+
   implicit def toGeometryCollectionEncoder[G <: GeoJson.Geometry](implicit geometryEncoder: Encoder[G]): Encoder[GeoJson.GeometryCollection[G]] =
     Encoder.instance[GeometryCollection[G]] { geometryCollection: GeometryCollection[G] =>
       Json.obj(

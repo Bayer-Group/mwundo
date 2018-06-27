@@ -10,7 +10,6 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class GeoJsonCodecTest extends FunSpec with Matchers with ParallelTestExecution {
 
   import GeoJsonCodec._
-  import cats.syntax.either._
 
   private def marshalAndUnmarshal[T](t: T)(implicit encoder: Encoder[T], decoder: Decoder[T]) = {
     val json = t.asJson
@@ -381,6 +380,36 @@ class GeoJsonCodecTest extends FunSpec with Matchers with ParallelTestExecution 
       val featureWithoutId = Feature(GeoJson.Point(Coordinate(1, 1)), MyProps("hi de ho"))
 
       marshalAndUnmarshal(featureWithoutId)
+    }
+
+    it("should marshal and unmarshal a geometry"){
+
+      val polygon: Geometry = Polygon(Seq(
+        Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+        Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1))
+      ))
+
+      marshalAndUnmarshal(polygon)
+    }
+
+    it("should marshal and unmarshal geometries"){
+      val multiPolygon = MultiPolygon(Seq(
+        Seq(
+          Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+          Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1))),
+        Seq(
+          Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+          Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)))
+      ))
+
+      val polygon = Polygon(Seq(
+        Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1)),
+        Seq(Coordinate(0.1, 2.0), Coordinate(1.1, 2.1))
+      ))
+
+      val geometries: Seq[Geometry] = Seq(multiPolygon, polygon)
+
+      marshalAndUnmarshal(geometries)
     }
 
   }
