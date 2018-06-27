@@ -61,6 +61,8 @@ object GeoJsonCodec {
   }
 
   implicit val toGeometryDecoder: Decoder[GeoJson.Geometry] = Decoder.instance[Geometry]{ cursor =>
+    import cats.syntax.either._
+
     cursor.downField("type").as[String].toTry.map{
       case "Polygon" => cursor.as[GeoJson.Polygon]
       case "MultiPolygon" => cursor.as[MultiPolygon]
