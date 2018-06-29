@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.1] - 2018-06-29
+
+- Adding encoder and decoder for geometry (see [#13](https://github.com/MonsantoCo/mwundo/pull/13))
+
 ## [0.4.0] - 2018-06-12
 
 *There is a small breaking change in this version.  The Utils class had both JVM-only and generally useful classes in it, and therefore was split into two.*
