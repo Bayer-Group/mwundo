@@ -188,7 +188,7 @@ object GeoJsonImplicits {
      */
     def centroid: Coordinate = {
       val centroid = asJTS.getCentroid.getCoordinate
-      Coordinate(BigDecimal(centroid.x), BigDecimal(centroid.y))
+      Coordinate(centroid.x, centroid.y)
     }
 
     /**

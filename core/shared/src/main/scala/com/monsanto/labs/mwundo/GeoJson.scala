@@ -12,7 +12,7 @@ object GeoJson {
 
   sealed trait Coords[+A] {val coordinates: A}
 
-  case class Coordinate(x: BigDecimal, y: BigDecimal)
+  case class Coordinate(x: Double, y: Double)
 
   case class Point(coordinates: Coordinate) extends Geometry with Coords[Coordinate] {
     override val `type`: String = "Point"

@@ -16,11 +16,11 @@ object GeoJsonCodec {
   import com.monsanto.labs.mwundo.GeoJson._
 
   implicit val coordinateEncoder: Encoder[GeoJson.Coordinate] = Encoder.instance { coordinate =>
-    Array[BigDecimal](coordinate.x, coordinate.y).asJson
+    Array[Double](coordinate.x, coordinate.y).asJson
   }
 
   implicit val coordinateDecoder: Decoder[GeoJson.Coordinate] = Decoder.instance { cursor =>
-    cursor.as[Array[BigDecimal]] match {
+    cursor.as[Array[Double]] match {
       case Right(coords) if coords.length == 2 => Right(Coordinate(coords(0), coords(1)))
       case _ => Left(DecodingFailure("Decoding error.  Coordinates must be an 'x' and a 'y' in array form.", cursor.history))
     }
