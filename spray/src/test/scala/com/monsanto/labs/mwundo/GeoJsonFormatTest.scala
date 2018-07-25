@@ -225,5 +225,16 @@ class GeoJsonFormatTest extends FunSpec with Matchers with ParallelTestExecution
 
       marshalAndUnmarshal(f)
     }
+
+    it("should unmarshal coordinates with Z"){
+
+      "[1.0, 2.0, 0.0]".parseJson.convertTo[Coordinate] shouldEqual Coordinate(1.0, 2.0)
+    }
+
+
+    it("should not unmarshal coordinates with length > 3"){
+
+      assertThrows[DeserializationException]("[1.0, 2.0, 0.0, 0.0]".parseJson.convertTo[Coordinate])
+    }
   }
 }

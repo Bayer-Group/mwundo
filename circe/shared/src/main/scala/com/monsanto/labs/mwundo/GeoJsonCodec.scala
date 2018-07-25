@@ -21,8 +21,8 @@ object GeoJsonCodec {
 
   implicit val coordinateDecoder: Decoder[GeoJson.Coordinate] = Decoder.instance { cursor =>
     cursor.as[Array[Double]] match {
-      case Right(coords) if coords.length == 2 => Right(Coordinate(coords(0), coords(1)))
-      case _ => Left(DecodingFailure("Decoding error.  Coordinates must be an 'x' and a 'y' in array form.", cursor.history))
+      case Right(coords) if coords.length == 2 || coords.length == 3 => Right(Coordinate(coords(0), coords(1)))
+      case _ => Left(DecodingFailure("Decoding error.  Coordinates must be an 'x' and a 'y' or 'x', 'y', 'z' in array form.", cursor.history))
     }
   }
 
