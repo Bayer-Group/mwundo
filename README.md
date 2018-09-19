@@ -4,19 +4,21 @@
 GeoJSON object, spray-json and circe formats, and basic Geo/Geometry
 
 ## Include in your project
+
+Add the following to your SBT dependencies:
+
+`"com.monsanto.labs" %% "mwundo-core" % "0.5.0"`
+
+And then optionally add one of the provided marshalling modules:
+
+`"com.monsanto.labs" %% "mwundo-spray" % "0.5.0"`
+
+`"com.monsanto.labs" %% "mwundo-crice" % "0.5.0"`
+
 For version 0.2.0 and prior, add the following to your SBT dependencies:
 
 `"com.monsanto.labs" %% "mwundo" % "0.2.0"`
 
-For later versions, add the following to your SBT dependencies:
-
-`"com.monsanto.labs" %% "mwundo-core" % "0.3.1"`
-
-And then optionally add one of the provided marshalling modules:
-
-`"com.monsanto.labs" %% "mwundo-spray" % "0.3.1"`
-
-`"com.monsanto.labs" %% "mwundo-crice" % "0.3.1"`
 
 You may also need to add:
 
