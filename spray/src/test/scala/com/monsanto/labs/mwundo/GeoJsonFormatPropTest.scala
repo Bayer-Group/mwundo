@@ -59,8 +59,8 @@ object GeoJsonGenerators {
   implicit def arbGeometryCollection[T <: Geometry]: Arbitrary[GeometryCollection[T]] = Arbitrary(genGeometryCollection[T])
 
   def genCoordinate: Gen[Coordinate] = for {
-    x <- arbitrary[BigDecimal]
-    y <- arbitrary[BigDecimal]
+    x <- arbitrary[Double]
+    y <- arbitrary[Double]
   } yield Coordinate(x, y)
 
   def genCoordinateSeq: Gen[Seq[Coordinate]] = Gen.nonEmptyContainerOf[Seq, Coordinate](genCoordinate)

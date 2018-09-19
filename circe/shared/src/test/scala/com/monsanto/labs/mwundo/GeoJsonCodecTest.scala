@@ -152,6 +152,16 @@ class GeoJsonCodecTest extends FunSpec with Matchers with ParallelTestExecution 
       coordinate should be (Coordinate(0.1, 2.0))
     }
 
+    it("should unmarshal coordinates with length of 3"){
+
+      val jsonArrayAsString = "[1.0,2.0,0.1]"
+
+      val jsonArray = parse(jsonArrayAsString).right.get
+      val coordinate = jsonArray.as[Coordinate].right.get
+
+      coordinate should be (Coordinate(1.0, 2.0))
+    }
+
     it("should NOT convert a JSON Array of size 0 to a Coordinate") {
       val jsonArrayAsString = "[]"
 
@@ -168,13 +178,14 @@ class GeoJsonCodecTest extends FunSpec with Matchers with ParallelTestExecution 
       jsonArray.as[Coordinate].toTry.isFailure should be (true)
     }
 
-    it("should NOT convert a JSON Array of size greater than 2 to a Coordinate") {
-      val jsonArrayAsString = "[0.1,0.1,0.1]"
+    it("should NOT convert a JSON Array of size greater than 3 to a Coordinate") {
+      val jsonArrayAsString = "[0.1,0.1,0.1,0.1]"
 
       val jsonArray = parse(jsonArrayAsString).right.get
 
       jsonArray.as[Coordinate].toTry.isFailure should be (true)
     }
+
 
     it("should marshal and unmarshal Coordinate") {
       val coordinate = Coordinate(0.1, 2.0)
