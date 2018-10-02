@@ -1,6 +1,6 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom.Geometry
+import org.locationtech.jts.geom.Geometry
 
 object JTSGeometryImplicits {
   implicit class RichJTSGeometry(geom: Geometry){

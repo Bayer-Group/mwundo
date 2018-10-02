@@ -1,7 +1,7 @@
 package com.monsanto.labs.mwundo
 
 import com.monsanto.labs.mwundo.GeoJson.{Coordinate, Feature, FeatureCollection}
-import com.vividsolutions.jts.geom.GeometryFactory
+import org.locationtech.jts.geom.GeometryFactory
 
 /**
  * Bounding box used to wrap GeoJson shapes so various area calculations can be performed
@@ -66,7 +66,7 @@ object GeoJsonImplicits {
 
     /**
      * convert geometry to JTS format
-     * @return com.vividsolutions.jts.geom.Geometry
+     * @return org.locationtech.jts.geom.Geometry
      */
     def asJTS = jtsGeoFormat.toJTSGeo(geometry, RichGeoJsonFeature.geoFac)
 

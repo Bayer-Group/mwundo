@@ -5,7 +5,7 @@ object Dependencies {
   private val breeze = "0.13"
 
   lazy val core = Seq(
-    "com.vividsolutions" %  "jts-core"       % "1.14.0",
+    "org.locationtech.jts" %  "jts-core"       % "1.16.0",
     // -- breeze --
     "org.scalanlp"       %% "breeze"         % breeze,
     "org.scalanlp"       %% "breeze-natives" % breeze

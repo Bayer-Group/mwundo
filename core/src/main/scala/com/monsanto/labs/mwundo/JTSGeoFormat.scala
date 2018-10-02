@@ -1,7 +1,7 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom._
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
+import org.locationtech.jts.geom._
+import org.locationtech.jts.geom.impl.CoordinateArraySequence
 
 /**
  * Created by Ryan Richt on 10/26/15

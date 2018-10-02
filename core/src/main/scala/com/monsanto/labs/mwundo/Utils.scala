@@ -1,6 +1,6 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom._
+import org.locationtech.jts.geom._
 import collection.JavaConverters._
 
 /**

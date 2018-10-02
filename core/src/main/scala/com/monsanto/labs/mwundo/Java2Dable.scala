@@ -2,7 +2,7 @@ package com.monsanto.labs.mwundo
 
 import java.awt.geom.Point2D
 
-import com.vividsolutions.jts.awt.PolygonShape
+import org.locationtech.jts.awt.PolygonShape
 
 /**
  * Created by Ryan Richt on 10/26/15

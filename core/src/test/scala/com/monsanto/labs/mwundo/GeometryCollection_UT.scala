@@ -1,8 +1,8 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
+import org.locationtech.jts.geom.impl.CoordinateArraySequence
 import org.scalatest.{Matchers, FunSpec}
-import com.vividsolutions.jts.geom._
+import org.locationtech.jts.geom._
 import collection.JavaConverters._
 //import JTSGeometryImplicits._
 
