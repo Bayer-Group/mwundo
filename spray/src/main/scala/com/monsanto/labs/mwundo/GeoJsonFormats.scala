@@ -17,8 +17,8 @@ object GeoJsonFormats extends DefaultJsonProtocol {
     )
 
     def read(json: JsValue): Coordinate = json match {
-      case JsArray(is) if is.length == 2 =>
-        Coordinate(is(0).convertTo[BigDecimal], is(1).convertTo[BigDecimal])
+      case JsArray(is) if is.length == 2 || is.length == 3 =>
+        Coordinate(is(0).convertTo[Double], is(1).convertTo[Double])
       case _ => deserializationError(s"'$json' is not a valid Coordinate")
     }
   }
