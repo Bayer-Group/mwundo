@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.1] - 2020-09-16
+
+- Update the JTS dependency to 1.16.1
+
 ## [0.5.0] - 2018-09-19
 *Breaking Change: Change coordinate primitive to Double from BigDecimal (see [#14](https://github.com/MonsantoCo/mwundo/pull/14))*
 

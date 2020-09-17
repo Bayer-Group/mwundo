@@ -37,7 +37,7 @@ lazy val scalacVersionOptions: Map[String, Seq[String]] = Map(
   "2.12" -> Seq.empty
 )
 
-lazy val breeze = "0.13"
+lazy val breeze = "1.0"
 lazy val circe = "0.9.3"
 
 lazy val mwundo = project.in(file("."))
@@ -63,7 +63,7 @@ lazy val `mwundo-core` = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   libraryDependencies ++= Seq(
     "org.scalanlp"       %% "breeze"         % breeze,
     "org.scalanlp"       %% "breeze-natives" % breeze,
-    "com.vividsolutions" %  "jts-core"       % "1.14.0")))
+    "org.locationtech.jts" % "jts-core" % "1.16.1")))
 
 lazy val `mwundo-coreJVM`= `mwundo-core`.jvm
 lazy val `mwundo-coreJS`= `mwundo-core`.js

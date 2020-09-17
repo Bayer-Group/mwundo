@@ -1,7 +1,7 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom._
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
+import org.locationtech.jts.geom._
+import org.locationtech.jts.geom.impl.CoordinateArraySequence
 
 trait JTSGeoFormat[G] {
   def toJTSGeo(g: G, gf: GeometryFactory): Geometry
@@ -10,12 +10,12 @@ trait JTSGeoFormat[G] {
 
 object JTSGeoFormat {
 
-  implicit def SeqConverter[G : JTSGeoFormat] = new JTSGeoFormat[Seq[G]] {
+  implicit def SeqConverter[G: JTSGeoFormat] = new JTSGeoFormat[Seq[G]] {
 
     val gConverter = implicitly[JTSGeoFormat[G]]
 
     def toJTSGeo(g: Seq[G], gf: GeometryFactory): Geometry =
-      new GeometryCollection( g.map( innerG => gConverter.toJTSGeo(innerG, gf) ).toArray, gf)
+      new GeometryCollection(g.map(innerG => gConverter.toJTSGeo(innerG, gf)).toArray, gf)
 
     def fromJTSGeo(geo: Geometry): Seq[G] = {
       val coll = geo.asInstanceOf[GeometryCollection]
@@ -44,10 +44,10 @@ object JTSGeoFormat {
     def fromJTSGeo(geo: Geometry): GeoJson.MultiPolygon = {
 
       val polys = Seq.tabulate(geo.getNumGeometries)(i => geo.getGeometryN(i).asInstanceOf[Polygon])
-      val all = polys.map(p =>
-        Seq(p.getExteriorRing.getCoordinates.map(toGeoJsonCoord).toSeq) ++
-          Seq.tabulate(p.getNumInteriorRing)(i => p.getInteriorRingN(i).getCoordinates.map(toGeoJsonCoord).toSeq)
-      )
+      val all = polys.map(
+        p =>
+          Seq(p.getExteriorRing.getCoordinates.map(toGeoJsonCoord).toSeq) ++
+            Seq.tabulate(p.getNumInteriorRing)(i => p.getInteriorRingN(i).getCoordinates.map(toGeoJsonCoord).toSeq))
 
       GeoJson.MultiPolygon(all)
     }

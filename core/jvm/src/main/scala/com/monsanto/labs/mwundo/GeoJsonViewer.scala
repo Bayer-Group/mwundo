@@ -1,21 +1,25 @@
 package com.monsanto.labs.mwundo
 
 /**
- * Created by Ryan Richt on 10/26/15
- */
+  * Created by Ryan Richt on 10/26/15
+  */
 import javax.swing.JPanel
 
 /**
- * viewer class of GeoJson objects
- * @param geos
- * @param windowWidthMax
- * @param windowHeightMax
- * @param ev1
- * @param ev2
- * @param offset
- * @tparam G
- */
-case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](geos: Seq[G], windowWidthMax: Int = 700, windowHeightMax: Int = 700)(implicit offset: Int = 10) extends JPanel {
+  * viewer class of GeoJson objects
+  * @param geos
+  * @param windowWidthMax
+  * @param windowHeightMax
+  * @param ev1
+  * @param ev2
+  * @param offset
+  * @tparam G
+  */
+case class GeoJsonViewer[G <: GeoJson.Geometry: Java2Dable: GeoTransformer](
+    geos: Seq[G],
+    windowWidthMax: Int = 700,
+    windowHeightMax: Int = 700)(implicit offset: Int = 10)
+    extends JPanel {
   import java.awt.{Graphics, Graphics2D}
   import javax.swing.JFrame
 
@@ -28,12 +32,14 @@ case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](ge
     val sw = implicitly[Java2Dable[G]]
     val shapes = translated.flatMap(g => sw.toJava2D(g))
 
-    shapes.foreach{ s => g.asInstanceOf[Graphics2D].draw(s) }
+    shapes.foreach { s =>
+      g.asInstanceOf[Graphics2D].draw(s)
+    }
   }
 
   /**
-   * displays geometry in Java Swing
-   */
+    * displays geometry in Java Swing
+    */
   def display() = {
     val scalingInfo = ScalingInformation(geos, windowHeightMax, windowWidthMax)
     val geoWidth = ((scalingInfo.maxX - scalingInfo.minX) * scalingInfo.upScale).toInt
@@ -48,23 +54,26 @@ case class GeoJsonViewer[G <: GeoJson.Geometry : Java2Dable : GeoTransformer](ge
 }
 
 object GeoJsonViewer {
+
   /**
-   * transforms GeoJson object into geometries that are viewable in the GeoJsonViewer
-   * @param windowWidthMax
-   * @param windowHeightMax
-   * @param geos
-   * @param offset
-   * @tparam G
-   * @return
-   */
-  def transformToJava2DLocalCoordinates[G <: GeoJson.Geometry : Java2Dable : GeoTransformer]
-  (windowWidthMax: Double, windowHeightMax: Double, geos: Seq[G])(implicit offset: Int) = {
+    * transforms GeoJson object into geometries that are viewable in the GeoJsonViewer
+    * @param windowWidthMax
+    * @param windowHeightMax
+    * @param geos
+    * @param offset
+    * @tparam G
+    * @return
+    */
+  def transformToJava2DLocalCoordinates[G <: GeoJson.Geometry: Java2Dable: GeoTransformer](
+      windowWidthMax: Double,
+      windowHeightMax: Double,
+      geos: Seq[G])(implicit offset: Int) = {
 
     val transformer = implicitly[GeoTransformer[G]]
 
     val scalingInfo = ScalingInformation(geos, windowHeightMax, windowWidthMax)
 
-    geos.map{ geo =>
+    geos.map { geo =>
       val translated = transformer.translate(-1 * scalingInfo.minX, -1 * scalingInfo.minY)(geo)
       val scaled = transformer.scale(scalingInfo.upScale, -1 * scalingInfo.upScale)(translated)
       transformer.translate(offset, offset + (scalingInfo.maxY - scalingInfo.minY) * scalingInfo.upScale)(scaled)
@@ -72,19 +81,18 @@ object GeoJsonViewer {
   }
 }
 
-private case class ScalingInformation[G <: GeoJson.Geometry : Java2Dable : GeoTransformer]
-(
-  geometries: Seq[G],
-  windowHeightMax: Double,
-  windowWidthMax: Double
-  ){
+private case class ScalingInformation[G <: GeoJson.Geometry: Java2Dable: GeoTransformer](
+    geometries: Seq[G],
+    windowHeightMax: Double,
+    windowWidthMax: Double
+) {
 
   val transformer = implicitly[GeoTransformer[G]]
 
-  val maxX = geometries.map( geometry => transformer.maxX(geometry) ).max
-  val maxY = geometries.map( geometry => transformer.maxY(geometry) ).max
-  val minX = geometries.map( geometry => transformer.minX(geometry) ).min
-  val minY = geometries.map( geometry => transformer.minY(geometry) ).min
+  val maxX = geometries.map(geometry => transformer.maxX(geometry)).max
+  val maxY = geometries.map(geometry => transformer.maxY(geometry)).max
+  val minX = geometries.map(geometry => transformer.minX(geometry)).min
+  val minY = geometries.map(geometry => transformer.minY(geometry)).min
 
-  val upScale = Math.min( windowHeightMax / (maxY - minY), windowWidthMax / (maxX - minX) )
+  val upScale = Math.min(windowHeightMax / (maxY - minY), windowWidthMax / (maxX - minX))
 }

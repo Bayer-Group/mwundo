@@ -1,14 +1,14 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
-import org.scalatest.{Matchers, FunSpec}
-import com.vividsolutions.jts.geom._
+import org.locationtech.jts.geom.impl.CoordinateArraySequence
+import org.scalatest.{FunSpec, Matchers}
+import org.locationtech.jts.geom._
 import collection.JavaConverters._
 //import JTSGeometryImplicits._
 
 /**
- * Created by dgdale on 10/30/15.
- */
+  * Created by dgdale on 10/30/15.
+  */
 class GeometryCollection_UT extends FunSpec with Matchers {
 
   describe("GeometryCollecton") {

@@ -8,7 +8,6 @@ import io.circe.parser._
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class GeoJsonCodecTest extends FunSpec with Matchers with ParallelTestExecution {
-  import cats.syntax.either._
   import GeoJsonCodec._
 
   private def marshalAndUnmarshal[T](t: T)(implicit encoder: Encoder[T], decoder: Decoder[T]) = {
