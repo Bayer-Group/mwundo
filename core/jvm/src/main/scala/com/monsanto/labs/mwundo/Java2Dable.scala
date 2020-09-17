@@ -2,8 +2,7 @@ package com.monsanto.labs.mwundo
 
 import java.awt.geom.Point2D
 
-import com.vividsolutions.jts.awt.PolygonShape
-
+import org.locationtech.jts.awt.PolygonShape
 
 trait Java2Dable[G] {
   def toJava2D(g: G): Seq[java.awt.Shape]
@@ -17,6 +16,7 @@ object Java2Dable {
   endRing.setAccessible(true)
 
   implicit object MultiPolygonJava2D extends Java2Dable[GeoJson.MultiPolygon] {
+
     /**
       * converts GeoJson MultiPolygon into JTS MultiPolygon
       * @param g

@@ -1,10 +1,10 @@
 package com.monsanto.labs.mwundo
 
-import com.vividsolutions.jts.geom.Geometry
+import org.locationtech.jts.geom.Geometry
 
 object JTSGeometryImplicits {
-  implicit class RichJTSGeometry(geom: Geometry){
-    def as[G <: GeoJson.Geometry : JTSGeoFormat]: G = implicitly[JTSGeoFormat[G]].fromJTSGeo(geom)
+  implicit class RichJTSGeometry(geom: Geometry) {
+    def as[G <: GeoJson.Geometry: JTSGeoFormat]: G = implicitly[JTSGeoFormat[G]].fromJTSGeo(geom)
   }
 
   //  implicit class RichGeometryCollection[G <: Geometry](geomC: GeometryCollection)

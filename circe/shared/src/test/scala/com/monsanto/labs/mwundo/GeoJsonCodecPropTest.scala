@@ -15,7 +15,6 @@ class GeoJsonFormatPropTest extends FunSpec with Checkers with ParallelTestExecu
 
   import GeoJsonCodec._
   import GeoJsonGenerators._
-  import cats.syntax.either._
 
   private def marshalAndUnmarshal[T](t: T)(implicit encoder: Encoder[T], decoder: Decoder[T]) = {
     val json = t.asJson
